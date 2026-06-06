@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đơn xử lý khiếu nại - LOHO HOUSE</title>
+<style>
+  :root{
+    --ink:#1a1a1a; --line:#333; --muted:#666;
+    --brand:#7a5c3e; --brand2:#a8835a;
+    --ok:#1b7f3b; --okbg:#e7f6ec;
+    --warn:#b46a00; --warnbg:#fff3e0;
+    --wait:#9aa0a6; --waitbg:#f1f3f4;
+    --pink:#fbeee6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:#e9eaee; color:var(--ink);
+    font-family:"Times New Roman","Songti SC",serif;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+
+  /* ---------- Toolbar ---------- */
+  .toolbar{position:sticky; top:0; z-index:50; background:#fff; border-bottom:2px solid var(--brand);
+    padding:10px 16px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+    font-family:Arial,Helvetica,sans-serif; box-shadow:0 2px 8px rgba(0,0,0,.08);}
+  .toolbar .grow{flex:1;}
+  .btn{border:none; border-radius:8px; padding:9px 16px; font-size:14px; font-weight:700;
+    cursor:pointer; font-family:Arial,sans-serif; transition:.15s;}
+  .btn:hover{filter:brightness(1.06); transform:translateY(-1px);}
+  .btn-print{background:var(--brand); color:#fff;}
+  .btn-save{background:#2563eb; color:#fff;}
+  .btn-new{background:#eef0f3; color:#333;}
+  .btn-list{background:#0f9d58; color:#fff;}
+  .badge{display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:999px;
+    font-size:13px; font-weight:800; font-family:Arial,sans-serif; border:1.5px solid transparent;}
+  .badge.wait{background:var(--waitbg); color:#5f6368; border-color:#dadce0;}
+  .badge.proc{background:var(--warnbg); color:var(--warn); border-color:#f0c98a;}
+  .badge.done{background:var(--okbg); color:var(--ok); border-color:#9bd6ad;}
+  .badge .dot{width:9px;height:9px;border-radius:50%;background:currentColor;}
+  .savehint{font-family:Arial,sans-serif;font-size:12px;color:var(--muted);}
+
+  /* ---------- A4 Sheet ---------- */
+  .sheet{width:210mm; min-height:297mm; margin:14px auto; background:#fff;
+    padding:12mm 12mm 10mm; box-shadow:0 4px 24px rgba(0,0,0,.18);}
+  .hdr{display:grid; grid-template-columns:34mm 1fr 40mm; border:1.6px solid var(--line);}
+  .hdr .logo{border-right:1.6px solid var(--line); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; padding:4px; text-align:center;}
+  .hdr .logo b{font-size:18px; letter-spacing:1px; color:var(--brand);}
+  .hdr .logo span{font-size:9px; color:var(--muted);}
+  .hdr .title{display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6px;}
+  .hdr .title b{font-size:17px; text-transform:uppercase;}
+  .hdr .title em{font-size:14px; font-style:normal; color:#444;}
+  .hdr .code{border-left:1.6px solid var(--line); display:flex; flex-direction:column;}
+  .hdr .code .cl{font-size:10px; padding:3px 5px; border-bottom:1px solid #bbb; background:var(--pink); text-align:center;}
+  .hdr .code .cv{flex:1; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:15px; color:var(--brand);}
+
+  table.form{width:100%; border-collapse:collapse; margin-top:-1.6px;}
+  table.form td{border:1px solid var(--line); padding:3px 6px; vertical-align:middle; font-size:12.5px;}
+  .band{background:var(--brand); color:#fff; font-weight:800; text-align:center; font-size:13px; letter-spacing:.5px;}
+  .lbl{background:var(--pink); font-weight:700; width:26%; line-height:1.15;}
+  .lbl small{font-weight:400; color:#555;}
+  .band .cn{color:#f0e6da; font-weight:400;}
+  .lbl .cn{color:#666;}
+
+  input.f, textarea.f, select.f{width:100%; border:none; outline:none; background:transparent;
+    font-family:inherit; font-size:12.5px; color:var(--ink); resize:none; padding:1px 2px;}
+  input.f::placeholder, textarea.f::placeholder{color:#bdbdbd; font-style:italic;}
+  input.f:focus, textarea.f:focus, select.f:focus{background:#fff7ec;}
+  textarea.f{min-height:30px; line-height:1.3;}
+  .chk{display:inline-flex; align-items:center; gap:4px; margin:2px 12px 2px 0; font-size:12px;}
+  .chk input{width:14px;height:14px; accent-color:var(--brand);}
+  .chkwrap{line-height:1.7;}
+  .inlineother{width:120px; border:none; border-bottom:1px dotted #999; outline:none; background:transparent; font-family:inherit; font-size:12px;}
+  .two{display:grid; grid-template-columns:1fr 1fr;}
+
+  .sign{display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); border-top:none;}
+  .sign div{border-right:1px solid var(--line); min-height:64px; padding:4px 6px; text-align:center; font-size:12px; font-weight:700;}
+  .sign div:last-child{border-right:none;}
+  .sign small{display:block; font-weight:400; color:#666; margin-bottom:2px;}
+
+  /* ---------- List view ---------- */
+  #listView{display:none; max-width:1000px; margin:18px auto; background:#fff; border-radius:10px;
+    padding:18px; box-shadow:0 4px 24px rgba(0,0,0,.12); font-family:Arial,sans-serif;}
+  #listView h2{margin:0 0 12px; color:var(--brand); font-size:18px;}
+  .lt{width:100%; border-collapse:collapse; font-size:13px;}
+  .lt th,.lt td{border:1px solid #e3e3e3; padding:8px 10px; text-align:left;}
+  .lt th{background:#f7f4ef; color:#444;}
+  .lt tr:hover td{background:#fbf8f3; cursor:pointer;}
+  .pill{display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:700;}
+  .pill.done{background:var(--okbg); color:var(--ok);}
+  .pill.proc{background:var(--warnbg); color:var(--warn);}
+  .pill.wait{background:var(--waitbg); color:#5f6368;}
+  .stat{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px;}
+  .card{flex:1; min-width:120px; background:#f7f4ef; border-radius:8px; padding:10px 14px;}
+  .card b{display:block; font-size:22px; color:var(--brand);}
+  .card span{font-size:12px; color:#666;}
+
+  /* ---------- Banner cấu hình ---------- */
+  #cfgWarn{display:none; background:#fff3cd; color:#7a5b00; border-bottom:1px solid #ffe69c;
+    padding:8px 16px; font-family:Arial,sans-serif; font-size:13px;}
+
+  @media print{
+    .toolbar,.noprint,#cfgWarn{display:none !important;}
+    body{background:#fff;}
+    .sheet{width:auto; min-height:auto; margin:0; padding:0; box-shadow:none;}
+    @page{size:A4 portrait; margin:10mm;}
+    input.f:focus, textarea.f:focus, select.f:focus{background:transparent;}
+    #listView{display:none !important;}
+  }
+  @media(max-width:760px){ .sheet{width:auto; padding:10px;} }
+</style>
+</head>
+<body>
+
+<div id="cfgWarn">⚠️ Chưa cấu hình link Google Sheet. Mở file <b>index.html</b>, dán URL Apps Script vào dòng <b>SCRIPT_URL</b> (xem hướng dẫn). Hiện nút Lưu chỉ chạy thử.</div>
+
+<!-- ============ TOOLBAR ============ -->
+<div class="toolbar">
+  <button class="btn btn-save" onclick="saveForm()">💾 Lưu vào Google Sheet</button>
+  <button class="btn btn-print" onclick="window.print()">🖨️ In A4</button>
+  <button class="btn btn-new" onclick="newForm()">➕ Tạo đơn mới</button>
+  <button class="btn btn-list" onclick="toggleList()">📋 Danh sách &amp; trạng thái</button>
+  <span class="grow"></span>
+  <span id="statusBadge" class="badge wait"><span class="dot"></span><span id="statusText">Chưa lưu</span></span>
+  <span id="saveHint" class="savehint"></span>
+</div>
+
+<!-- ============ A4 SHEET ============ -->
+<div class="sheet" id="sheet">
+  <div class="hdr">
+    <div class="logo"><b>LOHO</b><b style="font-size:14px">HOUSE</b><span>客诉处理</span></div>
+    <div class="title"><b>Đơn xử lý khiếu nại sàn TMĐT</b><em>客诉处理单</em></div>
+    <div class="code"><div class="cl">Mã đơn 客诉编号</div><div class="cv" id="maDonView">—</div></div>
+  </div>
+
+  <table class="form">
+    <tr><td colspan="4" class="band">ĐƠN VỊ LẬP ĐƠN <span class="cn">申请单位</span></td></tr>
+    <tr>
+      <td class="lbl">Người lập đơn <small>申请人</small></td>
+      <td><input class="f" id="nguoiLapDon" placeholder="Họ tên người lập"></td>
+      <td class="lbl">Đơn vị <small>单位</small></td>
+      <td><input class="f" id="donViLap" placeholder="VD: CSKH"></td>
+    </tr>
+    <tr>
+      <td class="lbl">Ngày lập đơn <small>申请日期</small></td>
+      <td><input class="f" type="date" id="ngayLapDon"></td>
+      <td class="lbl">Thời gian <small>时间</small></td>
+      <td><input class="f" type="time" id="gioLap"></td>
+    </tr>
+    <tr>
+      <td class="lbl">Tên khách hàng <small>客户名称</small></td>
+      <td><input class="f" id="tenKH" placeholder="Tên / nickname KH"></td>
+      <td class="lbl">Số điện thoại <small>联络方式</small></td>
+      <td><input class="f" id="sdt" placeholder="SĐT / liên hệ"></td>
+    </tr>
+    <tr>
+      <td class="lbl">Kênh bán hàng <small>平台</small></td>
+      <td colspan="3" class="chkwrap">
+        <label class="chk"><input type="checkbox" name="kenh" value="Website">Website</label>
+        <label class="chk"><input type="checkbox" name="kenh" value="Shopee">Shopee</label>
+        <label class="chk"><input type="checkbox" name="kenh" value="Tiktok">Tiktok</label>
+        <label class="chk"><input type="checkbox" name="kenh" value="Lazada">Lazada</label>
+        <label class="chk"><input type="checkbox" name="kenh" value="Khác">Khác</label>
+        <input class="inlineother" id="kenhKhac" placeholder="......">
+      </td>
+    </tr>
+    <tr>
+      <td class="lbl">Địa chỉ khách hàng <small>地址</small></td>
+      <td colspan="3"><input class="f" id="diaChi" placeholder="Địa chỉ giao hàng"></td>
+    </tr>
+    <tr>
+      <td class="lbl">Loại khiếu nại <small>客诉类型</small></td>
+      <td colspan="3" class="chkwrap">
+        <label class="chk"><input type="checkbox" name="loaiKN" value="Thiếu hàng">Thiếu hàng</label>
+        <label class="chk"><input type="checkbox" name="loaiKN" value="Hàng bị hư hỏng">Hàng bị hư hỏng</label>
+        <label class="chk"><input type="checkbox" name="loaiKN" value="Gửi nhầm hàng">Gửi nhầm hàng (sai loại, kích thước, màu...)</label>
+        <label class="chk"><input type="checkbox" name="loaiKN" value="Màu sơn không chuẩn">Màu sơn không chuẩn màu</label>
+        <label class="chk"><input type="checkbox" name="loaiKN" value="Chất lượng không tốt">Chất lượng không tốt</label>
+        <label class="chk"><input type="checkbox" name="loaiKN" value="Khác">Khác</label>
+        <input class="inlineother" id="loaiKNKhac" placeholder="......">
+      </td>
+    </tr>
+    <tr>
+      <td class="lbl">Mã đơn hàng <small>订单号码</small></td>
+      <td><input class="f" id="maDonHang" placeholder="Mã đơn sàn TMĐT"></td>
+      <td class="lbl">Mã vận đơn <small>运送号码</small></td>
+      <td><input class="f" id="maVanDon" placeholder="Tracking"></td>
+    </tr>
+    <tr>
+      <td class="lbl">Ngày đặt hàng <small>订单日期</small></td>
+      <td><input class="f" type="date" id="ngayDatHang"></td>
+      <td class="lbl">Ngày đóng hàng <small>包装日</small></td>
+      <td><input class="f" type="date" id="ngayDongHang"></td>
+    </tr>
+    <tr>
+      <td class="lbl">Sản phẩm khiếu nại <small>客诉产品</small></td>
+      <td colspan="3"><input class="f" id="sanPham" placeholder="Tên sản phẩm bị khiếu nại"></td>
+    </tr>
+    <tr>
+      <td class="lbl">Nội dung khiếu nại <small>客诉内容</small></td>
+      <td colspan="3"><textarea class="f" id="noiDung" rows="2" placeholder="Mô tả chi tiết khiếu nại"></textarea></td>
+    </tr>
+    <tr>
+      <td class="lbl">Yêu cầu khách hàng <small>客户要求</small></td>
+      <td colspan="3"><textarea class="f" id="yeuCau" rows="2" placeholder="KH yêu cầu gì"></textarea></td>
+    </tr>
+    <tr>
+      <td class="lbl">Cách xử lý đề nghị <small>处理方式建议</small></td>
+      <td colspan="3"><textarea class="f" id="xuLyDeNghi" rows="2" placeholder="Đề xuất của người lập đơn"></textarea></td>
+    </tr>
+
+    <tr><td colspan="4" class="band">ĐƠN VỊ CHỊU TRÁCH NHIỆM XỬ LÝ <span class="cn">负责处理单位</span></td></tr>
+    <tr>
+      <td class="lbl">Người xử lý <small>处理人</small></td>
+      <td><input class="f" id="nguoiXuLy" placeholder="Người/nhóm xử lý"></td>
+      <td class="lbl">Chức vụ <small>职位</small></td>
+      <td><input class="f" id="chucVu" placeholder="Chức vụ"></td>
+    </tr>
+    <tr>
+      <td class="lbl">Bộ phận <small>部门</small></td>
+      <td><input class="f" id="boPhan" placeholder="Bộ phận"></td>
+      <td class="lbl">Ngày nhận đơn <small>受理日期</small></td>
+      <td><div class="two"><input class="f" type="date" id="ngayNhanDon"><input class="f" type="time" id="gioNhan"></div></td>
+    </tr>
+    <tr>
+      <td class="lbl">Kiểm tra &amp; xác nhận loại KN <small>检查及确认客诉类型</small></td>
+      <td colspan="3" class="chkwrap">
+        <label class="chk"><input type="checkbox" name="xacNhanKN" value="Thiếu hàng">Thiếu hàng</label>
+        <label class="chk"><input type="checkbox" name="xacNhanKN" value="Hàng bị hư hỏng">Hàng bị hư hỏng</label>
+        <label class="chk"><input type="checkbox" name="xacNhanKN" value="Gửi nhầm hàng">Gửi nhầm hàng</label>
+        <label class="chk"><input type="checkbox" name="xacNhanKN" value="Màu sơn không chuẩn">Màu sơn không chuẩn màu</label>
+        <label class="chk"><input type="checkbox" name="xacNhanKN" value="Chất lượng không tốt">Chất lượng không tốt</label>
+        <label class="chk"><input type="checkbox" name="xacNhanKN" value="Khác">Khác</label>
+        <input class="inlineother" id="xacNhanKhac" placeholder="......">
+      </td>
+    </tr>
+    <tr>
+      <td class="lbl">Nêu rõ lý do <small>说明理由</small></td>
+      <td colspan="3"><textarea class="f" id="lyDo" rows="2" placeholder="Lý do / nguyên nhân"></textarea></td>
+    </tr>
+    <tr>
+      <td class="lbl">Phương án xử lý <small>处理方式</small></td>
+      <td colspan="3"><textarea class="f" id="phuongAn" rows="2" placeholder="Phương án xử lý cuối cùng"></textarea></td>
+    </tr>
+    <tr>
+      <td class="lbl">Trạng thái xử lý <small>处理状态</small></td>
+      <td colspan="3">
+        <select class="f" id="trangThai" onchange="refreshBadge()" style="font-weight:700">
+          <option value="Chưa hoàn thành">Chưa hoàn thành 未完成</option>
+          <option value="Đang xử lý">Đang xử lý 处理中</option>
+          <option value="Đã hoàn thành">Đã hoàn thành 已完成</option>
+        </select>
+      </td>
+    </tr>
+  </table>
+
+  <div class="band" style="border:1px solid var(--line); border-top:none;">ĐƠN VỊ LIÊN QUAN KÝ XÁC NHẬN ĐÃ XỬ LÝ <span class="cn">相关单位签核处理</span></div>
+  <div class="sign">
+    <div><small>CHỦ QUẢN 主管</small><input class="f" id="kyChuQuan" style="text-align:center"></div>
+    <div><small>KẾ TOÁN 会计</small><input class="f" id="kyKeToan" style="text-align:center"></div>
+    <div><small>XUẤT KHO 出库</small><input class="f" id="kyXuatKho" style="text-align:center"></div>
+    <div><small>CSKH 客服</small><input class="f" id="kyCSKH" style="text-align:center"></div>
+  </div>
+</div>
+
+<!-- ============ LIST VIEW ============ -->
+<div id="listView">
+  <h2>📋 Danh sách đơn khiếu nại &amp; trạng thái</h2>
+  <div class="stat" id="statCards"></div>
+  <table class="lt">
+    <thead><tr><th>Mã đơn</th><th>Ngày lập</th><th>Khách hàng</th><th>Kênh</th><th>Loại KN</th><th>Trạng thái</th></tr></thead>
+    <tbody id="listBody"><tr><td colspan="6" style="text-align:center;color:#999">Đang tải...</td></tr></tbody>
+  </table>
+  <p style="font-size:12px;color:#888;margin-top:10px">Bấm vào một dòng để mở lại đơn đó (sửa / cập nhật trạng thái).</p>
+</div>
+
+<script>
+  /* ============================================================
+     ⬇⬇⬇ DÁN LINK APPS SCRIPT CỦA BẠN VÀO ĐÂY (giữa 2 dấu nháy) ⬇⬇⬇
+     Lấy link này ở bước Deploy trong file HUONG_DAN. Dạng:
+     https://script.google.com/macros/s/AKfyc..../exec
+  ============================================================ */
+  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwbj4HoBMWuRBD9n4OgUO0WrcyBVcSu0rnEENQ8yRAPv2bih1BW4w5QDjNTHgu4Xm5N/exec";
+  /* ============================================================ */
+
+  var TEXT_FIELDS = ["nguoiLapDon","donViLap","ngayLapDon","gioLap","tenKH","sdt",
+    "kenhKhac","diaChi","loaiKNKhac","maDonHang","maVanDon","ngayDatHang","ngayDongHang",
+    "sanPham","noiDung","yeuCau","xuLyDeNghi","nguoiXuLy","chucVu","boPhan",
+    "ngayNhanDon","gioNhan","xacNhanKhac","lyDo","phuongAn","trangThai",
+    "kyChuQuan","kyKeToan","kyXuatKho","kyCSKH"];
+  var CHK_FIELDS = ["kenh","loaiKN","xacNhanKN"];
+  var configured = SCRIPT_URL && SCRIPT_URL.indexOf("script.google.com")>=0;
+  var currentMaDon = "";
+
+  window.addEventListener("DOMContentLoaded", function(){
+    var t=new Date();
+    document.getElementById("ngayLapDon").value=t.toISOString().slice(0,10);
+    document.getElementById("gioLap").value=t.toTimeString().slice(0,5);
+    if(!configured){ document.getElementById("cfgWarn").style.display="block"; }
+    fetchNextCode();
+    refreshBadge();
+  });
+
+  function localCode(){
+    var d=new Date(), mm=("0"+(d.getMonth()+1)).slice(-2), yy=(""+d.getFullYear()).slice(-2);
+    return "KN"+mm+yy+"-001";
+  }
+  function setCode(c){ currentMaDon=c; document.getElementById("maDonView").textContent=c; }
+
+  function fetchNextCode(){
+    if(!configured){ setCode(localCode()+" (thử)"); return; }
+    fetch(SCRIPT_URL+"?action=next")
+      .then(function(r){return r.json();})
+      .then(function(j){ setCode(j.maDon || localCode()); })
+      .catch(function(){ setCode(localCode()); });
+  }
+
+  function getChecked(name){
+    return Array.prototype.slice.call(document.querySelectorAll('input[name="'+name+'"]:checked'))
+      .map(function(c){return c.value;}).join(", ");
+  }
+  function setChecked(name, val){
+    var set=(val||"").split(",").map(function(s){return s.trim();});
+    document.querySelectorAll('input[name="'+name+'"]').forEach(function(c){ c.checked = set.indexOf(c.value)>=0; });
+  }
+
+  function collect(){
+    var d={maDon:currentMaDon};
+    TEXT_FIELDS.forEach(function(id){ d[id]=(document.getElementById(id)||{}).value||""; });
+    CHK_FIELDS.forEach(function(n){ d[n]=getChecked(n); });
+    return d;
+  }
+  function fill(d){
+    TEXT_FIELDS.forEach(function(id){ var e=document.getElementById(id); if(e) e.value=d[id]||""; });
+    CHK_FIELDS.forEach(function(n){ setChecked(n, d[n]||""); });
+    setCode(d.maDon||"");
+    refreshBadge();
+  }
+
+  function refreshBadge(){
+    var v=document.getElementById("trangThai").value;
+    var b=document.getElementById("statusBadge"), t=document.getElementById("statusText");
+    b.className="badge "+(v==="Đã hoàn thành"?"done":(v==="Đang xử lý"?"proc":"wait"));
+    t.textContent=v;
+  }
+
+  function saveForm(){
+    if(!document.getElementById("tenKH").value && !document.getElementById("maDonHang").value){
+      if(!confirm("Chưa có Tên KH và Mã đơn hàng. Vẫn lưu?")) return;
+    }
+    var data=collect();
+    var hint=document.getElementById("saveHint");
+    if(!configured){
+      console.log("DỮ LIỆU (bản thử):", data);
+      hint.textContent="⚠ Bản thử — chưa nối Google Sheet (xem Console F12).";
+      alert("Đây là bản chạy thử trên máy.\nSau khi dán SCRIPT_URL và đưa lên GitHub Pages, nút này sẽ ghi thẳng vào Google Sheet.");
+      return;
+    }
+    hint.textContent="⏳ Đang lưu...";
+    fetch(SCRIPT_URL, {
+      method:"POST",
+      body: JSON.stringify({action:"save", data:data})  /* text/plain -> tránh CORS preflight */
+    })
+    .then(function(r){return r.json();})
+    .then(function(res){
+      if(res.ok){
+        setCode(res.maDon);
+        hint.textContent="✓ Đã lưu "+new Date().toLocaleTimeString("vi-VN")+" ("+(res.action==="update"?"cập nhật":"đơn mới")+")";
+      } else { hint.textContent="✗ Lỗi: "+(res.error||"không rõ"); }
+    })
+    .catch(function(e){ hint.textContent="✗ Lỗi mạng: "+e.message; });
+  }
+
+  function newForm(){
+    if(!confirm("Tạo đơn mới? Dữ liệu chưa lưu sẽ mất.")) return;
+    TEXT_FIELDS.forEach(function(id){ var e=document.getElementById(id); if(e) e.value=""; });
+    document.querySelectorAll('input[type=checkbox]').forEach(function(c){c.checked=false;});
+    document.getElementById("trangThai").value="Chưa hoàn thành";
+    var t=new Date();
+    document.getElementById("ngayLapDon").value=t.toISOString().slice(0,10);
+    document.getElementById("gioLap").value=t.toTimeString().slice(0,5);
+    document.getElementById("saveHint").textContent="";
+    fetchNextCode(); refreshBadge();
+    showForm(); window.scrollTo(0,0);
+  }
+
+  /* ---------- List view ---------- */
+  function showForm(){ document.getElementById("sheet").style.display=""; document.getElementById("listView").style.display="none"; }
+  function toggleList(){
+    var lv=document.getElementById("listView");
+    if(lv.style.display==="block"){ showForm(); return; }
+    document.getElementById("sheet").style.display="none";
+    lv.style.display="block";
+    loadList();
+  }
+  function pillClass(v){ return v==="Đã hoàn thành"?"done":(v==="Đang xử lý"?"proc":"wait"); }
+  function loadList(){
+    var body=document.getElementById("listBody");
+    if(!configured){ body.innerHTML='<tr><td colspan="6" style="text-align:center;color:#c00">Chưa cấu hình Google Sheet.</td></tr>'; return; }
+    body.innerHTML='<tr><td colspan="6" style="text-align:center;color:#999">Đang tải...</td></tr>';
+    fetch(SCRIPT_URL+"?action=list")
+      .then(function(r){return r.json();})
+      .then(function(rows){
+        if(!rows.length){ body.innerHTML='<tr><td colspan="6" style="text-align:center;color:#999">Chưa có đơn nào.</td></tr>'; renderStats([]); return; }
+        renderStats(rows);
+        body.innerHTML="";
+        rows.slice().reverse().forEach(function(d){
+          var tr=document.createElement("tr");
+          tr.innerHTML='<td><b>'+esc(d.maDon)+'</b></td><td>'+esc(d.ngayLapDon)+'</td><td>'+esc(d.tenKH)+'</td>'
+            +'<td>'+esc(d.kenh)+'</td><td>'+esc(d.loaiKN)+'</td>'
+            +'<td><span class="pill '+pillClass(d.trangThai)+'">'+esc(d.trangThai||"-")+'</span></td>';
+          tr.onclick=function(){ fill(d); showForm(); window.scrollTo(0,0); };
+          body.appendChild(tr);
+        });
+      })
+      .catch(function(e){ body.innerHTML='<tr><td colspan="6" style="text-align:center;color:#c00">Lỗi tải: '+esc(e.message)+'</td></tr>'; });
+  }
+  function renderStats(rows){
+    var done=rows.filter(function(r){return r.trangThai==="Đã hoàn thành";}).length;
+    var proc=rows.filter(function(r){return r.trangThai==="Đang xử lý";}).length;
+    var wait=rows.length-done-proc;
+    document.getElementById("statCards").innerHTML=
+      '<div class="card"><b>'+rows.length+'</b><span>Tổng đơn</span></div>'+
+      '<div class="card"><b style="color:#9aa0a6">'+wait+'</b><span>Chưa hoàn thành</span></div>'+
+      '<div class="card"><b style="color:#b46a00">'+proc+'</b><span>Đang xử lý</span></div>'+
+      '<div class="card"><b style="color:#1b7f3b">'+done+'</b><span>Đã hoàn thành</span></div>';
+  }
+  function esc(s){ return (s==null?"":("
