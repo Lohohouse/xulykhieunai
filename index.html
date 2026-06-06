@@ -5,102 +5,115 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Đơn xử lý khiếu nại - LOHO HOUSE</title>
 <style>
-  :root{
-    --ink:#1a1a1a; --line:#333; --muted:#666;
-    --brand:#7a5c3e; --brand2:#a8835a;
-    --ok:#1b7f3b; --okbg:#e7f6ec;
-    --warn:#b46a00; --warnbg:#fff3e0;
-    --wait:#9aa0a6; --waitbg:#f1f3f4;
-    --pink:#fbeee6;
-  }
+  :root{ --ink:#1f2330; --brand:#7a5c3e; --brand2:#a8835a; --line:#333; --pink:#fbeee6;
+    --ok:#1b7f3b; --okbg:#e7f6ec; --warn:#b46a00; --warnbg:#fff3e0; --wait:#9aa0a6; --waitbg:#eef0f2;
+    --bd:#dfe3ea; --bg:#eef1f5; }
   *{box-sizing:border-box;}
-  body{margin:0; background:#e9eaee; color:var(--ink);
-    font-family:"Times New Roman","Songti SC",serif;
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:Arial,Helvetica,sans-serif;
     -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+
+  /* ---- toolbar ---- */
   .toolbar{position:sticky; top:0; z-index:50; background:#fff; border-bottom:2px solid var(--brand);
-    padding:10px 16px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;
-    font-family:Arial,Helvetica,sans-serif; box-shadow:0 2px 8px rgba(0,0,0,.08);}
+    padding:10px 16px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,.08);}
   .toolbar .grow{flex:1;}
-  .btn{border:none; border-radius:8px; padding:9px 16px; font-size:14px; font-weight:700; cursor:pointer; font-family:Arial,sans-serif; transition:.15s;}
+  .btn{border:none; border-radius:8px; padding:9px 16px; font-size:14px; font-weight:700; cursor:pointer; transition:.15s;}
   .btn:hover{filter:brightness(1.06); transform:translateY(-1px);}
   .btn-print{background:var(--brand); color:#fff;}
   .btn-save{background:#2563eb; color:#fff;}
   .btn-new{background:#eef0f3; color:#333;}
   .btn-list{background:#0f9d58; color:#fff;}
-  .badge{display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:999px; font-size:13px; font-weight:800; font-family:Arial,sans-serif; border:1.5px solid transparent;}
+  .badge{display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:999px; font-size:13px; font-weight:800; border:1.5px solid transparent;}
   .badge.wait{background:var(--waitbg); color:#5f6368; border-color:#dadce0;}
   .badge.proc{background:var(--warnbg); color:var(--warn); border-color:#f0c98a;}
   .badge.done{background:var(--okbg); color:var(--ok); border-color:#9bd6ad;}
   .badge .dot{width:9px;height:9px;border-radius:50%;background:currentColor;}
-  .savehint{font-family:Arial,sans-serif;font-size:12px;color:var(--muted);}
-  .sheet{width:210mm; min-height:297mm; margin:14px auto; background:#fff; padding:12mm 12mm 10mm; box-shadow:0 4px 24px rgba(0,0,0,.18);}
-  .hdr{display:grid; grid-template-columns:34mm 1fr 40mm; border:1.6px solid var(--line);}
-  .hdr .logo{border-right:1.6px solid var(--line); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px; text-align:center;}
-  .hdr .logo b{font-size:18px; letter-spacing:1px; color:var(--brand);}
-  .hdr .logo span{font-size:9px; color:var(--muted);}
-  .hdr .title{display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6px;}
-  .hdr .title b{font-size:17px; text-transform:uppercase;}
-  .hdr .title em{font-size:14px; font-style:normal; color:#444;}
-  .hdr .code{border-left:1.6px solid var(--line); display:flex; flex-direction:column;}
-  .hdr .code .cl{font-size:10px; padding:3px 5px; border-bottom:1px solid #bbb; background:var(--pink); text-align:center;}
-  .hdr .code .cv{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; font-weight:800; font-size:15px; color:var(--brand);}
-  .hdr .code .cv small{font-weight:400;font-size:8.5px;color:#999;}
-  table.form{width:100%; border-collapse:collapse; margin-top:-1.6px;}
-  table.form td{border:1px solid var(--line); padding:3px 6px; vertical-align:middle; font-size:12.5px;}
-  .band{background:var(--brand); color:#fff; font-weight:800; text-align:center; font-size:13px; letter-spacing:.5px;}
-  .lbl{background:var(--pink); font-weight:700; width:26%; line-height:1.15;}
-  .lbl small{font-weight:400; color:#555;}
-  .band .cn{color:#f0e6da; font-weight:400;}
-  .lbl .cn{color:#666;}
-  input.f, textarea.f, select.f{width:100%; border:none; outline:none; background:transparent; font-family:inherit; font-size:12.5px; color:var(--ink); resize:none; padding:1px 2px;}
-  input.f::placeholder, textarea.f::placeholder{color:#bdbdbd; font-style:italic;}
-  input.f:focus, textarea.f:focus, select.f:focus{background:#fff7ec;}
-  textarea.f{min-height:30px; line-height:1.3;}
-  .chk{display:inline-flex; align-items:center; gap:4px; margin:2px 12px 2px 0; font-size:12px;}
-  .chk input{width:14px;height:14px; accent-color:var(--brand);}
-  .chkwrap{line-height:1.7;}
-  .inlineother{width:120px; border:none; border-bottom:1px dotted #999; outline:none; background:transparent; font-family:inherit; font-size:12px;}
-  .two{display:grid; grid-template-columns:1fr 1fr;}
-  .mirror{background:#fafafa;}
-  .sign{display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); border-top:none;}
-  .sign div{border-right:1px solid var(--line); min-height:64px; padding:4px 6px; text-align:center; font-size:12px; font-weight:700;}
-  .sign div:last-child{border-right:none;}
-  .sign small{display:block; font-weight:400; color:#666; margin-bottom:2px;}
-  #stats{max-width:1100px; margin:10px auto 40px; background:#fff; border-radius:10px; padding:18px; box-shadow:0 4px 24px rgba(0,0,0,.12); font-family:Arial,sans-serif;}
-  #stats h2{margin:0 0 12px; color:var(--brand); font-size:18px;}
+  .savehint{font-size:12px;color:#777;}
+
+  /* ---- entry (modern UI) ---- */
+  .wrap{max-width:1080px; margin:18px auto; padding:0 16px;}
+  .card{background:#fff; border:1px solid var(--bd); border-radius:14px; box-shadow:0 2px 12px rgba(0,0,0,.05); padding:18px 20px; margin-bottom:16px;}
+  .card > h3{margin:0 0 16px; font-size:15px; color:#fff; background:linear-gradient(90deg,var(--brand),var(--brand2));
+    padding:9px 14px; border-radius:8px; letter-spacing:.3px;}
+  .card > h3 small{font-weight:400; opacity:.85;}
+  .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px 18px;}
+  .field{display:flex; flex-direction:column;}
+  .field.full{grid-column:1/-1;}
+  .field label{font-size:12.5px; font-weight:700; color:#555; margin-bottom:5px;}
+  .field label small{font-weight:400; color:#9aa0aa; margin-left:3px;}
+  .field input, .field textarea, .field select{width:100%; padding:10px 12px; border:1px solid var(--bd);
+    border-radius:9px; font-size:14px; font-family:inherit; color:var(--ink); background:#fff; transition:.15s;}
+  .field textarea{resize:vertical; min-height:70px; line-height:1.45;}
+  .field input:focus, .field textarea:focus, .field select:focus{border-color:var(--brand2); box-shadow:0 0 0 3px rgba(168,131,90,.15); outline:none;}
+  .codepill{display:inline-block; background:var(--pink); color:var(--brand); font-weight:800; font-size:15px; padding:8px 14px; border-radius:9px; letter-spacing:.5px;}
+  .codepill small{font-weight:400;color:#a98;}
+  .checks{display:flex; flex-wrap:wrap; gap:9px;}
+  .checks label{display:inline-flex; align-items:center; gap:7px; border:1px solid var(--bd); padding:8px 12px;
+    border-radius:9px; font-size:13.5px; cursor:pointer; background:#fff;}
+  .checks label:hover{border-color:var(--brand2);}
+  .checks input{width:16px;height:16px; accent-color:var(--brand);}
+  .checks .otherbox{padding:0;border:none;}
+  .checks .otherbox input[type=text]{width:150px; padding:7px 9px; border:1px solid var(--bd); border-radius:8px; font-size:13px;}
+  .twogrid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+
+  /* ---- stats ---- */
+  #stats{max-width:1080px; margin:0 auto 40px; padding:0 16px;}
+  .scard{background:#fff; border:1px solid var(--bd); border-radius:14px; box-shadow:0 2px 12px rgba(0,0,0,.05); padding:18px 20px;}
+  #stats h3{margin:0 0 14px; font-size:16px; color:var(--brand);}
   .stat{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px;}
-  .card{flex:1; min-width:130px; background:#f7f4ef; border-radius:8px; padding:10px 14px;}
-  .card b{display:block; font-size:24px; color:var(--brand);}
-  .card span{font-size:12px; color:#666;}
-  .filters{display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end; margin-bottom:12px; background:#faf8f5; border:1px solid #eee; border-radius:8px; padding:10px;}
-  .filters input, .filters select{font-family:Arial,sans-serif; font-size:13px; padding:7px 9px; border:1px solid #d8d8d8; border-radius:6px; background:#fff;}
-  .filters input[type=text]{min-width:220px; flex:1;}
-  .filters label{font-size:11px; color:#888; display:flex; flex-direction:column; gap:2px;}
-  .filters .fbtn{border:none; border-radius:6px; padding:8px 12px; font-size:13px; font-weight:700; cursor:pointer;}
+  .scell{flex:1; min-width:130px; background:#f7f4ef; border-radius:10px; padding:12px 14px;}
+  .scell b{display:block; font-size:24px; color:var(--brand);}
+  .scell span{font-size:12px; color:#666;}
+  .filters{display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end; margin-bottom:12px; background:#faf8f5; border:1px solid #eee; border-radius:10px; padding:12px;}
+  .filters input, .filters select{font-size:13px; padding:8px 10px; border:1px solid var(--bd); border-radius:8px; background:#fff;}
+  .filters input[type=text]{min-width:230px; flex:1;}
+  .filters label{font-size:11px; color:#888; display:flex; flex-direction:column; gap:3px;}
+  .fbtn{border:none; border-radius:8px; padding:9px 13px; font-size:13px; font-weight:700; cursor:pointer;}
   .fbtn.clear{background:#eee; color:#444;}
   .fbtn.csv{background:#0f9d58; color:#fff;}
   .fbtn.reload{background:#2563eb; color:#fff;}
+  .tablewrap{max-height:460px; overflow:auto; border:1px solid #eee; border-radius:10px;}
   .lt{width:100%; border-collapse:collapse; font-size:13px;}
-  .lt th,.lt td{border:1px solid #e8e8e8; padding:7px 9px; text-align:left; vertical-align:top;}
+  .lt th,.lt td{border:1px solid #edf0f3; padding:8px 10px; text-align:left; vertical-align:top;}
   .lt th{background:#f7f4ef; color:#444; position:sticky; top:0; white-space:nowrap;}
   .lt tr:hover td{background:#fbf8f3; cursor:pointer;}
-  .lt .desc{max-width:260px; font-size:12px; color:#555;}
+  .lt .desc{max-width:240px; font-size:12px; color:#555;}
   .pill{display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:700; white-space:nowrap;}
   .pill.done{background:var(--okbg); color:var(--ok);}
   .pill.proc{background:var(--warnbg); color:var(--warn);}
   .pill.wait{background:var(--waitbg); color:#5f6368;}
-  .tablewrap{max-height:460px; overflow:auto; border:1px solid #eee; border-radius:8px;}
   .muted{color:#999; text-align:center; padding:18px;}
-  #cfgWarn{display:none; background:#fff3cd; color:#7a5b00; border-bottom:1px solid #ffe69c; padding:8px 16px; font-family:Arial,sans-serif; font-size:13px;}
+  #cfgWarn{display:none; background:#fff3cd; color:#7a5b00; border-bottom:1px solid #ffe69c; padding:8px 16px; font-size:13px;}
+
+  /* ---- print sheet (hidden on screen) ---- */
+  #printsheet{display:none;}
   @media print{
-    .toolbar,.noprint,#cfgWarn,#stats{display:none !important;}
+    .toolbar,#entry,#stats,#cfgWarn{display:none !important;}
     body{background:#fff;}
-    .sheet{width:auto; min-height:auto; margin:0; padding:0; box-shadow:none;}
+    #printsheet{display:block; font-family:"Times New Roman","Songti SC",serif; color:#000;}
     @page{size:A4 portrait; margin:10mm;}
-    input.f:focus, textarea.f:focus, select.f:focus{background:transparent;}
-    .mirror{background:transparent;}
   }
-  @media(max-width:760px){ .sheet{width:auto; padding:10px;} }
+  /* print sheet styling (applies when shown) */
+  #printsheet .hdr{display:grid; grid-template-columns:34mm 1fr 40mm; border:1.6px solid var(--line);}
+  #printsheet .logo{border-right:1.6px solid var(--line); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px; text-align:center;}
+  #printsheet .logo b{font-size:18px; letter-spacing:1px; color:#000;}
+  #printsheet .logo span{font-size:9px; color:#555;}
+  #printsheet .title{display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6px;}
+  #printsheet .title b{font-size:17px; text-transform:uppercase;}
+  #printsheet .title em{font-size:14px; font-style:normal;}
+  #printsheet .codebox{border-left:1.6px solid var(--line); display:flex; flex-direction:column;}
+  #printsheet .codebox .cl{font-size:10px; padding:3px 5px; border-bottom:1px solid #999; text-align:center;}
+  #printsheet .codebox .cv{flex:1; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;}
+  #printsheet table{width:100%; border-collapse:collapse; margin-top:-1.6px;}
+  #printsheet td{border:1px solid var(--line); padding:4px 6px; vertical-align:top; font-size:12.5px;}
+  #printsheet .band{background:#e9ddd0; font-weight:800; text-align:center; font-size:13px;}
+  #printsheet .pl{font-weight:700; width:26%; background:#f7efe7; line-height:1.2;}
+  #printsheet .pl small{font-weight:400; color:#555;}
+  #printsheet .v{white-space:pre-wrap; word-break:break-word; min-height:16px;}
+  #printsheet .pchk{display:inline-block; margin:0 12px 2px 0; font-size:12px;}
+  #printsheet .sign{display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); border-top:none;}
+  #printsheet .sign div{border-right:1px solid var(--line); min-height:70px; padding:4px 6px; text-align:center; font-size:12px; font-weight:700;}
+  #printsheet .sign div:last-child{border-right:none;}
+  #printsheet .sign small{display:block; font-weight:400; color:#555;}
 </style>
 </head>
 <body>
@@ -109,7 +122,7 @@
 
 <div class="toolbar">
   <button class="btn btn-save" onclick="saveForm()">💾 Lưu vào Google Sheet</button>
-  <button class="btn btn-print" onclick="window.print()">🖨️ In A4</button>
+  <button class="btn btn-print" onclick="doPrint()">🖨️ In A4</button>
   <button class="btn btn-new" onclick="newForm()">➕ Tạo đơn mới</button>
   <button class="btn btn-list" onclick="jumpStats()">📊 Xem thống kê</button>
   <span class="grow"></span>
@@ -117,178 +130,191 @@
   <span id="saveHint" class="savehint"></span>
 </div>
 
-<div class="sheet" id="sheet">
-  <div class="hdr">
-    <div class="logo"><b>LOHO</b><b style="font-size:14px">HOUSE</b><span>客诉处理</span></div>
-    <div class="title"><b>Đơn xử lý khiếu nại sàn TMĐT</b><em>客诉处理单</em></div>
-    <div class="code"><div class="cl">Mã đơn 客诉编号</div><div class="cv"><span id="maDonView">—</span><small>(tự động)</small></div></div>
-  </div>
+<!-- ============ ENTRY (modern, screen only) ============ -->
+<div id="entry" class="wrap">
 
-  <table class="form">
-    <tr><td colspan="4" class="band">ĐƠN VỊ LẬP ĐƠN <span class="cn">申请单位</span></td></tr>
-    <tr>
-      <td class="lbl">Người lập đơn <small>申请人</small></td>
-      <td><input class="f" id="nguoiLapDon" value="Nguyễn Ngọc Huyền Hòa"></td>
-      <td class="lbl">Đơn vị <small>单位</small></td>
-      <td><input class="f" id="donViLap" value="CSKH"></td>
-    </tr>
-    <tr>
-      <td class="lbl">Ngày lập đơn <small>申请日期</small></td>
-      <td><input class="f" type="date" id="ngayLapDon"></td>
-      <td class="lbl">Thời gian <small>时间</small></td>
-      <td><input class="f" type="time" id="gioLap"></td>
-    </tr>
-    <tr>
-      <td class="lbl">Tên khách hàng <small>客户名称</small></td>
-      <td><input class="f" id="tenKH" placeholder="Tên / nickname KH"></td>
-      <td class="lbl">Số điện thoại <small>联络方式</small></td>
-      <td><input class="f" id="sdt" placeholder="SĐT / liên hệ"></td>
-    </tr>
-    <tr>
-      <td class="lbl">Kênh bán hàng <small>平台</small></td>
-      <td colspan="3" class="chkwrap">
-        <label class="chk"><input type="checkbox" name="kenh" value="Website">Website</label>
-        <label class="chk"><input type="checkbox" name="kenh" value="Shopee">Shopee</label>
-        <label class="chk"><input type="checkbox" name="kenh" value="Tiktok">Tiktok</label>
-        <label class="chk"><input type="checkbox" name="kenh" value="Lazada">Lazada</label>
-        <label class="chk"><input type="checkbox" name="kenh" value="Khác">Khác</label>
-        <input class="inlineother" id="kenhKhac" placeholder="......">
-      </td>
-    </tr>
-    <tr>
-      <td class="lbl">Địa chỉ khách hàng <small>地址</small></td>
-      <td colspan="3"><input class="f" id="diaChi" placeholder="Địa chỉ giao hàng"></td>
-    </tr>
-    <tr>
-      <td class="lbl">Loại khiếu nại <small>客诉类型</small></td>
-      <td colspan="3" class="chkwrap">
-        <label class="chk"><input type="checkbox" name="loaiKN" value="Thiếu hàng">Thiếu hàng</label>
-        <label class="chk"><input type="checkbox" name="loaiKN" value="Hàng bị hư hỏng">Hàng bị hư hỏng</label>
-        <label class="chk"><input type="checkbox" name="loaiKN" value="Gửi nhầm hàng">Gửi nhầm hàng</label>
-        <label class="chk"><input type="checkbox" name="loaiKN" value="Màu sơn không chuẩn">Màu sơn không chuẩn màu</label>
-        <label class="chk"><input type="checkbox" name="loaiKN" value="Chất lượng không tốt">Chất lượng không tốt</label>
-        <label class="chk"><input type="checkbox" name="loaiKN" value="Khác">Khác</label>
-        <input class="inlineother" id="loaiKNKhac" placeholder="......">
-      </td>
-    </tr>
-    <tr>
-      <td class="lbl">Mã đơn hàng <small>订单号码</small></td>
-      <td><input class="f" id="maDonHang" placeholder="Mã đơn sàn TMĐT"></td>
-      <td class="lbl">Mã vận đơn <small>运送号码</small></td>
-      <td><input class="f" id="maVanDon" placeholder="Tracking"></td>
-    </tr>
-    <tr>
-      <td class="lbl">Ngày đặt hàng <small>订单日期</small></td>
-      <td><input class="f" type="date" id="ngayDatHang"></td>
-      <td class="lbl">Ngày đóng hàng <small>包装日</small></td>
-      <td><input class="f" type="date" id="ngayDongHang"></td>
-    </tr>
-    <tr>
-      <td class="lbl">Sản phẩm khiếu nại <small>客诉产品</small></td>
-      <td colspan="3"><input class="f" id="sanPham" placeholder="Tên sản phẩm bị khiếu nại"></td>
-    </tr>
-    <tr>
-      <td class="lbl">Nội dung khiếu nại <small>客诉内容</small></td>
-      <td colspan="3"><textarea class="f" id="noiDung" rows="2" placeholder="Mô tả chi tiết khiếu nại"></textarea></td>
-    </tr>
-    <tr>
-      <td class="lbl">Yêu cầu khách hàng <small>客户要求</small></td>
-      <td colspan="3"><textarea class="f" id="yeuCau" rows="2" placeholder="KH yêu cầu gì"></textarea></td>
-    </tr>
-    <tr>
-      <td class="lbl">Cách xử lý đề nghị <small>处理方式建议</small></td>
-      <td colspan="3"><textarea class="f" id="xuLyDeNghi" rows="2" placeholder="Đề xuất của người lập đơn"></textarea></td>
-    </tr>
-
-    <tr><td colspan="4" class="band">ĐƠN VỊ CHỊU TRÁCH NHIỆM XỬ LÝ <span class="cn">负责处理单位</span></td></tr>
-    <tr>
-      <td class="lbl">Người xử lý <small>处理人</small></td>
-      <td><input class="f" id="nguoiXuLy" placeholder="Người/nhóm xử lý"></td>
-      <td class="lbl">Chức vụ <small>职位</small></td>
-      <td><input class="f" id="chucVu" placeholder="Chức vụ"></td>
-    </tr>
-    <tr>
-      <td class="lbl">Bộ phận <small>部门</small></td>
-      <td><input class="f" id="boPhan" placeholder="Bộ phận"></td>
-      <td class="lbl">Ngày nhận đơn <small>受理日期</small></td>
-      <td><div class="two"><input class="f" type="date" id="ngayNhanDon"><input class="f" type="time" id="gioNhan"></div></td>
-    </tr>
-    <tr>
-      <td class="lbl">Kiểm tra &amp; xác nhận loại KN <small>检查及确认客诉类型</small></td>
-      <td colspan="3" class="chkwrap">
-        <label class="chk"><input type="checkbox" name="xacNhanKN" value="Thiếu hàng">Thiếu hàng</label>
-        <label class="chk"><input type="checkbox" name="xacNhanKN" value="Hàng bị hư hỏng">Hàng bị hư hỏng</label>
-        <label class="chk"><input type="checkbox" name="xacNhanKN" value="Gửi nhầm hàng">Gửi nhầm hàng</label>
-        <label class="chk"><input type="checkbox" name="xacNhanKN" value="Màu sơn không chuẩn">Màu sơn không chuẩn màu</label>
-        <label class="chk"><input type="checkbox" name="xacNhanKN" value="Chất lượng không tốt">Chất lượng không tốt</label>
-        <label class="chk"><input type="checkbox" name="xacNhanKN" value="Khác">Khác</label>
-        <input class="inlineother" id="xacNhanKhac" placeholder="......">
-      </td>
-    </tr>
-    <tr>
-      <td class="lbl">Nêu rõ lý do <small>说明理由</small><br><small style="color:#b08;">= Nội dung KN</small></td>
-      <td colspan="3"><textarea class="f mirror" id="lyDo" rows="2" placeholder="Tự lấy từ Nội dung khiếu nại — có thể sửa"></textarea></td>
-    </tr>
-    <tr>
-      <td class="lbl">Phương án xử lý <small>处理方式</small><br><small style="color:#b08;">= Cách xử lý đề nghị</small></td>
-      <td colspan="3"><textarea class="f mirror" id="phuongAn" rows="2" placeholder="Tự lấy từ Cách xử lý đề nghị — có thể sửa"></textarea></td>
-    </tr>
-    <tr>
-      <td class="lbl">Trạng thái xử lý <small>处理状态</small></td>
-      <td colspan="3">
-        <select class="f" id="trangThai" onchange="refreshBadge()" style="font-weight:700">
+  <div class="card">
+    <h3>Đơn xử lý khiếu nại sàn TMĐT <small>客诉处理单</small></h3>
+    <div class="grid">
+      <div class="field"><label>Mã đơn <small>客诉编号</small></label><div class="codepill"><span id="maDonView">—</span> <small>(tự động)</small></div></div>
+      <div class="field"><label>Trạng thái xử lý <small>处理状态</small></label>
+        <select id="trangThai" onchange="refreshBadge()">
           <option value="Chưa hoàn thành">Chưa hoàn thành 未完成</option>
           <option value="Đang xử lý">Đang xử lý 处理中</option>
           <option value="Đã hoàn thành">Đã hoàn thành 已完成</option>
         </select>
-      </td>
-    </tr>
-  </table>
+      </div>
+    </div>
+  </div>
 
-  <div class="band" style="border:1px solid var(--line); border-top:none;">ĐƠN VỊ LIÊN QUAN KÝ XÁC NHẬN ĐÃ XỬ LÝ <span class="cn">相关单位签核处理</span></div>
+  <div class="card">
+    <h3>① Đơn vị lập đơn <small>申请单位</small></h3>
+    <div class="grid">
+      <div class="field"><label>Người lập đơn <small>申请人</small></label><input id="nguoiLapDon" value="Nguyễn Ngọc Huyền Hòa"></div>
+      <div class="field"><label>Đơn vị <small>单位</small></label><input id="donViLap" value="CSKH"></div>
+      <div class="field"><label>Ngày lập đơn <small>申请日期</small></label><input type="date" id="ngayLapDon"></div>
+      <div class="field"><label>Thời gian <small>时间</small></label><input type="time" id="gioLap"></div>
+      <div class="field"><label>Tên khách hàng <small>客户名称</small></label><input id="tenKH" placeholder="Tên / nickname KH"></div>
+      <div class="field"><label>Số điện thoại <small>联络方式</small></label><input id="sdt" placeholder="SĐT / liên hệ"></div>
+      <div class="field full"><label>Kênh bán hàng <small>平台</small></label>
+        <div class="checks">
+          <label><input type="checkbox" name="kenh" value="Website">Website</label>
+          <label><input type="checkbox" name="kenh" value="Shopee">Shopee</label>
+          <label><input type="checkbox" name="kenh" value="Tiktok">Tiktok</label>
+          <label><input type="checkbox" name="kenh" value="Lazada">Lazada</label>
+          <label><input type="checkbox" name="kenh" value="Khác">Khác</label>
+          <span class="otherbox"><input type="text" id="kenhKhac" placeholder="Kênh khác..."></span>
+        </div>
+      </div>
+      <div class="field full"><label>Địa chỉ khách hàng <small>地址</small></label><input id="diaChi" placeholder="Địa chỉ giao hàng"></div>
+      <div class="field full"><label>Loại khiếu nại <small>客诉类型</small></label>
+        <div class="checks">
+          <label><input type="checkbox" name="loaiKN" value="Thiếu hàng">Thiếu hàng</label>
+          <label><input type="checkbox" name="loaiKN" value="Hàng bị hư hỏng">Hàng bị hư hỏng</label>
+          <label><input type="checkbox" name="loaiKN" value="Gửi nhầm hàng">Gửi nhầm hàng</label>
+          <label><input type="checkbox" name="loaiKN" value="Màu sơn không chuẩn">Màu sơn không chuẩn màu</label>
+          <label><input type="checkbox" name="loaiKN" value="Chất lượng không tốt">Chất lượng không tốt</label>
+          <label><input type="checkbox" name="loaiKN" value="Khác">Khác</label>
+          <span class="otherbox"><input type="text" id="loaiKNKhac" placeholder="Loại khác..."></span>
+        </div>
+      </div>
+      <div class="field"><label>Mã đơn hàng <small>订单号码</small></label><input id="maDonHang" placeholder="Mã đơn sàn TMĐT"></div>
+      <div class="field"><label>Mã vận đơn <small>运送号码</small></label><input id="maVanDon" placeholder="Tracking"></div>
+      <div class="field"><label>Ngày đặt hàng <small>订单日期</small></label><input type="date" id="ngayDatHang"></div>
+      <div class="field"><label>Ngày đóng hàng <small>包装日</small></label><input type="date" id="ngayDongHang"></div>
+      <div class="field full"><label>Sản phẩm khiếu nại <small>客诉产品</small></label><input id="sanPham" placeholder="Tên sản phẩm bị khiếu nại"></div>
+      <div class="field full"><label>Nội dung khiếu nại <small>客诉内容</small></label><textarea id="noiDung" placeholder="Mô tả chi tiết khiếu nại"></textarea></div>
+      <div class="field full"><label>Yêu cầu khách hàng <small>客户要求</small></label><textarea id="yeuCau" placeholder="KH yêu cầu gì"></textarea></div>
+      <div class="field full"><label>Cách xử lý đề nghị <small>处理方式建议</small></label><textarea id="xuLyDeNghi" placeholder="Đề xuất của người lập đơn"></textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>② Đơn vị chịu trách nhiệm xử lý <small>负责处理单位</small></h3>
+    <div class="grid">
+      <div class="field"><label>Người xử lý <small>处理人</small></label><textarea id="nguoiXuLy" placeholder="Một hoặc nhiều người, mỗi người 1 dòng"></textarea></div>
+      <div class="field"><label>Chức vụ <small>职位</small></label><textarea id="chucVu" placeholder="Chức vụ tương ứng"></textarea></div>
+      <div class="field"><label>Bộ phận <small>部门</small></label><input id="boPhan" placeholder="Bộ phận"></div>
+      <div class="field"><label>Ngày nhận đơn <small>受理日期</small></label>
+        <div class="twogrid"><input type="date" id="ngayNhanDon"><input type="time" id="gioNhan"></div>
+      </div>
+      <div class="field full"><label>Kiểm tra &amp; xác nhận loại KN <small>检查及确认客诉类型</small></label>
+        <div class="checks">
+          <label><input type="checkbox" name="xacNhanKN" value="Thiếu hàng">Thiếu hàng</label>
+          <label><input type="checkbox" name="xacNhanKN" value="Hàng bị hư hỏng">Hàng bị hư hỏng</label>
+          <label><input type="checkbox" name="xacNhanKN" value="Gửi nhầm hàng">Gửi nhầm hàng</label>
+          <label><input type="checkbox" name="xacNhanKN" value="Màu sơn không chuẩn">Màu sơn không chuẩn màu</label>
+          <label><input type="checkbox" name="xacNhanKN" value="Chất lượng không tốt">Chất lượng không tốt</label>
+          <label><input type="checkbox" name="xacNhanKN" value="Khác">Khác</label>
+          <span class="otherbox"><input type="text" id="xacNhanKhac" placeholder="Khác..."></span>
+        </div>
+      </div>
+      <div class="field full"><label>Nêu rõ lý do <small>说明理由</small></label><textarea id="lyDo" placeholder="Tự lấy theo Nội dung khiếu nại — có thể sửa"></textarea></div>
+      <div class="field full"><label>Phương án xử lý <small>处理方式</small></label><textarea id="phuongAn" placeholder="Tự lấy theo Cách xử lý đề nghị — có thể sửa"></textarea></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>③ Ký xác nhận đã xử lý <small>相关单位签核处理</small></h3>
+    <div class="grid">
+      <div class="field"><label>Chủ quản <small>主管</small></label><input id="kyChuQuan" placeholder="Tên ký"></div>
+      <div class="field"><label>Kế toán <small>会计</small></label><input id="kyKeToan" placeholder="Tên ký"></div>
+      <div class="field"><label>Xuất kho <small>出库</small></label><input id="kyXuatKho" placeholder="Tên ký"></div>
+      <div class="field"><label>CSKH <small>客服</small></label><input id="kyCSKH" placeholder="Tên ký"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ PRINT SHEET (print only) ============ -->
+<div id="printsheet">
+  <div class="hdr">
+    <div class="logo"><b>LOHO</b><b style="font-size:14px">HOUSE</b><span>客诉处理</span></div>
+    <div class="title"><b>Đơn xử lý khiếu nại sàn TMĐT</b><em>客诉处理单</em></div>
+    <div class="codebox"><div class="cl">Mã đơn 客诉编号</div><div class="cv"><span id="p_maDon"></span></div></div>
+  </div>
+  <table>
+    <tr><td colspan="4" class="band">ĐƠN VỊ LẬP ĐƠN 申请单位</td></tr>
+    <tr><td class="pl">Người lập đơn <small>申请人</small></td><td><span class="v" id="p_nguoiLapDon"></span></td>
+        <td class="pl">Đơn vị <small>单位</small></td><td><span class="v" id="p_donViLap"></span></td></tr>
+    <tr><td class="pl">Ngày lập đơn <small>申请日期</small></td><td><span class="v" id="p_ngayLapDon"></span></td>
+        <td class="pl">Thời gian <small>时间</small></td><td><span class="v" id="p_gioLap"></span></td></tr>
+    <tr><td class="pl">Tên khách hàng <small>客户名称</small></td><td><span class="v" id="p_tenKH"></span></td>
+        <td class="pl">Số điện thoại <small>联络方式</small></td><td><span class="v" id="p_sdt"></span></td></tr>
+    <tr><td class="pl">Kênh bán hàng <small>平台</small></td><td colspan="3" id="p_kenh">
+        <span class="pchk" data-g="kenh" data-v="Website">☐ Website</span>
+        <span class="pchk" data-g="kenh" data-v="Shopee">☐ Shopee</span>
+        <span class="pchk" data-g="kenh" data-v="Tiktok">☐ Tiktok</span>
+        <span class="pchk" data-g="kenh" data-v="Lazada">☐ Lazada</span>
+        <span class="pchk" data-g="kenh" data-v="Khác">☐ Khác</span>
+        <span class="v" id="p_kenhKhac"></span></td></tr>
+    <tr><td class="pl">Địa chỉ khách hàng <small>地址</small></td><td colspan="3"><span class="v" id="p_diaChi"></span></td></tr>
+    <tr><td class="pl">Loại khiếu nại <small>客诉类型</small></td><td colspan="3" id="p_loaiKN">
+        <span class="pchk" data-g="loaiKN" data-v="Thiếu hàng">☐ Thiếu hàng</span>
+        <span class="pchk" data-g="loaiKN" data-v="Hàng bị hư hỏng">☐ Hàng bị hư hỏng</span>
+        <span class="pchk" data-g="loaiKN" data-v="Gửi nhầm hàng">☐ Gửi nhầm hàng</span>
+        <span class="pchk" data-g="loaiKN" data-v="Màu sơn không chuẩn">☐ Màu sơn không chuẩn màu</span>
+        <span class="pchk" data-g="loaiKN" data-v="Chất lượng không tốt">☐ Chất lượng không tốt</span>
+        <span class="pchk" data-g="loaiKN" data-v="Khác">☐ Khác</span>
+        <span class="v" id="p_loaiKNKhac"></span></td></tr>
+    <tr><td class="pl">Mã đơn hàng <small>订单号码</small></td><td><span class="v" id="p_maDonHang"></span></td>
+        <td class="pl">Mã vận đơn <small>运送号码</small></td><td><span class="v" id="p_maVanDon"></span></td></tr>
+    <tr><td class="pl">Ngày đặt hàng <small>订单日期</small></td><td><span class="v" id="p_ngayDatHang"></span></td>
+        <td class="pl">Ngày đóng hàng <small>包装日</small></td><td><span class="v" id="p_ngayDongHang"></span></td></tr>
+    <tr><td class="pl">Sản phẩm khiếu nại <small>客诉产品</small></td><td colspan="3"><span class="v" id="p_sanPham"></span></td></tr>
+    <tr><td class="pl">Nội dung khiếu nại <small>客诉内容</small></td><td colspan="3"><span class="v" id="p_noiDung"></span></td></tr>
+    <tr><td class="pl">Yêu cầu khách hàng <small>客户要求</small></td><td colspan="3"><span class="v" id="p_yeuCau"></span></td></tr>
+    <tr><td class="pl">Cách xử lý đề nghị <small>处理方式建议</small></td><td colspan="3"><span class="v" id="p_xuLyDeNghi"></span></td></tr>
+
+    <tr><td colspan="4" class="band">ĐƠN VỊ CHỊU TRÁCH NHIỆM XỬ LÝ 负责处理单位</td></tr>
+    <tr><td class="pl">Người xử lý <small>处理人</small></td><td><span class="v" id="p_nguoiXuLy"></span></td>
+        <td class="pl">Chức vụ <small>职位</small></td><td><span class="v" id="p_chucVu"></span></td></tr>
+    <tr><td class="pl">Bộ phận <small>部门</small></td><td><span class="v" id="p_boPhan"></span></td>
+        <td class="pl">Ngày nhận đơn <small>受理日期</small></td><td><span class="v" id="p_ngayNhanDon"></span> <span class="v" id="p_gioNhan"></span></td></tr>
+    <tr><td class="pl">Kiểm tra &amp; xác nhận loại KN <small>检查及确认客诉类型</small></td><td colspan="3" id="p_xacNhanKN">
+        <span class="pchk" data-g="xacNhanKN" data-v="Thiếu hàng">☐ Thiếu hàng</span>
+        <span class="pchk" data-g="xacNhanKN" data-v="Hàng bị hư hỏng">☐ Hàng bị hư hỏng</span>
+        <span class="pchk" data-g="xacNhanKN" data-v="Gửi nhầm hàng">☐ Gửi nhầm hàng</span>
+        <span class="pchk" data-g="xacNhanKN" data-v="Màu sơn không chuẩn">☐ Màu sơn không chuẩn màu</span>
+        <span class="pchk" data-g="xacNhanKN" data-v="Chất lượng không tốt">☐ Chất lượng không tốt</span>
+        <span class="pchk" data-g="xacNhanKN" data-v="Khác">☐ Khác</span>
+        <span class="v" id="p_xacNhanKhac"></span></td></tr>
+    <tr><td class="pl">Nêu rõ lý do <small>说明理由</small></td><td colspan="3"><span class="v" id="p_lyDo"></span></td></tr>
+    <tr><td class="pl">Phương án xử lý <small>处理方式</small></td><td colspan="3"><span class="v" id="p_phuongAn"></span></td></tr>
+    <tr><td class="pl">Trạng thái xử lý <small>处理状态</small></td><td colspan="3"><span class="v" id="p_trangThai"></span></td></tr>
+  </table>
+  <div class="band" style="border:1px solid #333;border-top:none;">ĐƠN VỊ LIÊN QUAN KÝ XÁC NHẬN ĐÃ XỬ LÝ 相关单位签核处理</div>
   <div class="sign">
-    <div><small>CHỦ QUẢN 主管</small><input class="f" id="kyChuQuan" style="text-align:center"></div>
-    <div><small>KẾ TOÁN 会计</small><input class="f" id="kyKeToan" style="text-align:center"></div>
-    <div><small>XUẤT KHO 出库</small><input class="f" id="kyXuatKho" style="text-align:center"></div>
-    <div><small>CSKH 客服</small><input class="f" id="kyCSKH" style="text-align:center"></div>
+    <div><small>CHỦ QUẢN 主管</small><span class="v" id="p_kyChuQuan"></span></div>
+    <div><small>KẾ TOÁN 会计</small><span class="v" id="p_kyKeToan"></span></div>
+    <div><small>XUẤT KHO 出库</small><span class="v" id="p_kyXuatKho"></span></div>
+    <div><small>CSKH 客服</small><span class="v" id="p_kyCSKH"></span></div>
   </div>
 </div>
 
+<!-- ============ STATS (screen only) ============ -->
 <div id="stats">
-  <h2>📊 Thống kê &amp; tra cứu đơn khiếu nại</h2>
-  <div class="stat" id="statCards"></div>
-  <div class="filters">
-    <input type="text" id="fSearch" placeholder="Tìm mã đơn, khách hàng, sản phẩm, mã đơn hàng..." oninput="applyFilter()">
-    <label>Từ ngày<input type="date" id="fFrom" onchange="applyFilter()"></label>
-    <label>Đến ngày<input type="date" id="fTo" onchange="applyFilter()"></label>
-    <label>Trạng thái
-      <select id="fStatus" onchange="applyFilter()">
-        <option value="">Tất cả</option>
-        <option>Chưa hoàn thành</option>
-        <option>Đang xử lý</option>
-        <option>Đã hoàn thành</option>
-      </select>
-    </label>
-    <label>Kênh
-      <select id="fChannel" onchange="applyFilter()">
-        <option value="">Tất cả</option>
-        <option>Website</option><option>Shopee</option><option>Tiktok</option><option>Lazada</option><option>Khác</option>
-      </select>
-    </label>
-    <button class="fbtn clear" onclick="clearFilter()">Xóa lọc</button>
-    <button class="fbtn reload" onclick="loadList()">Làm mới</button>
-    <button class="fbtn csv" onclick="exportCSV()">Xuất CSV</button>
+  <div class="scard">
+    <h3>📊 Thống kê &amp; tra cứu đơn khiếu nại</h3>
+    <div class="stat" id="statCards"></div>
+    <div class="filters">
+      <input type="text" id="fSearch" placeholder="Tìm mã đơn, khách hàng, sản phẩm, mã đơn hàng..." oninput="applyFilter()">
+      <label>Từ ngày<input type="date" id="fFrom" onchange="applyFilter()"></label>
+      <label>Đến ngày<input type="date" id="fTo" onchange="applyFilter()"></label>
+      <label>Trạng thái<select id="fStatus" onchange="applyFilter()"><option value="">Tất cả</option><option>Chưa hoàn thành</option><option>Đang xử lý</option><option>Đã hoàn thành</option></select></label>
+      <label>Kênh<select id="fChannel" onchange="applyFilter()"><option value="">Tất cả</option><option>Website</option><option>Shopee</option><option>Tiktok</option><option>Lazada</option><option>Khác</option></select></label>
+      <button class="fbtn clear" onclick="clearFilter()">Xóa lọc</button>
+      <button class="fbtn reload" onclick="loadList()">Làm mới</button>
+      <button class="fbtn csv" onclick="exportCSV()">Xuất CSV</button>
+    </div>
+    <div class="tablewrap">
+      <table class="lt">
+        <thead><tr><th>Mã đơn</th><th>Ngày lập</th><th>Khách hàng</th><th>SĐT</th><th>Kênh</th><th>Loại KN</th><th>Sản phẩm</th><th>Nội dung</th><th>Trạng thái</th></tr></thead>
+        <tbody id="listBody"><tr><td colspan="9" class="muted">Đang tải...</td></tr></tbody>
+      </table>
+    </div>
+    <p style="font-size:12px;color:#888;margin-top:8px">Bấm vào một dòng để mở lại đơn (sửa / cập nhật trạng thái, rồi bấm Lưu).</p>
   </div>
-  <div class="tablewrap">
-    <table class="lt">
-      <thead><tr>
-        <th>Mã đơn</th><th>Ngày lập</th><th>Khách hàng</th><th>SĐT</th><th>Kênh</th>
-        <th>Loại KN</th><th>Sản phẩm</th><th>Nội dung</th><th>Trạng thái</th>
-      </tr></thead>
-      <tbody id="listBody"><tr><td colspan="9" class="muted">Đang tải...</td></tr></tbody>
-    </table>
-  </div>
-  <p style="font-size:12px;color:#888;margin-top:8px">Bấm vào một dòng để mở lại đơn (sửa / cập nhật trạng thái, rồi bấm Lưu).</p>
 </div>
 
 <script>
@@ -300,6 +326,7 @@
     "ngayNhanDon","gioNhan","xacNhanKhac","lyDo","phuongAn","trangThai",
     "kyChuQuan","kyKeToan","kyXuatKho","kyCSKH"];
   var CHK_FIELDS = ["kenh","loaiKN","xacNhanKN"];
+  var DATE_FIELDS = ["ngayLapDon","ngayDatHang","ngayDongHang","ngayNhanDon"];
   var DEFAULT_NGUOI_LAP = "Nguyễn Ngọc Huyền Hòa";
   var configured = SCRIPT_URL && SCRIPT_URL.indexOf("script.google.com")>=0;
   var currentMaDon = "";
@@ -315,6 +342,7 @@
     refreshBadge();
     loadList();
   });
+  window.addEventListener("beforeprint", syncPrint);
 
   function setupMirror(){ linkMirror("noiDung","lyDo"); linkMirror("xuLyDeNghi","phuongAn"); }
   function linkMirror(srcId, dstId){
@@ -364,6 +392,28 @@
     b.className="badge "+(v==="Đã hoàn thành"?"done":(v==="Đang xử lý"?"proc":"wait"));
     t.textContent=v;
   }
+
+  function fmtDate(s){
+    if(!s) return "";
+    var m=(""+s).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return m ? (m[3]+"/"+m[2]+"/"+m[1]) : s;
+  }
+  function syncPrint(){
+    var d=collect();
+    document.getElementById("p_maDon").textContent=d.maDon||"";
+    TEXT_FIELDS.forEach(function(id){
+      var el=document.getElementById("p_"+id); if(!el) return;
+      el.textContent = (DATE_FIELDS.indexOf(id)>=0) ? fmtDate(d[id]) : (d[id]||"");
+    });
+    CHK_FIELDS.forEach(function(g){
+      var sel=(d[g]||"").split(",").map(function(s){return s.trim();});
+      document.querySelectorAll('#printsheet .pchk[data-g="'+g+'"]').forEach(function(sp){
+        var v=sp.getAttribute("data-v");
+        sp.textContent=(sel.indexOf(v)>=0?"☑ ":"☐ ")+v;
+      });
+    });
+  }
+  function doPrint(){ syncPrint(); window.print(); }
 
   function saveForm(){
     if(!document.getElementById("tenKH").value && !document.getElementById("maDonHang").value){
@@ -419,13 +469,10 @@
       .then(function(rows){ allRows = rows||[]; applyFilter(); })
       .catch(function(e){ body.innerHTML='<tr><td colspan="9" class="muted" style="color:#c00">Lỗi tải: '+esc(e.message)+'</td></tr>'; });
   }
-
   function getFiltered(){
     var q=(document.getElementById("fSearch").value||"").toLowerCase().trim();
-    var from=document.getElementById("fFrom").value;
-    var to=document.getElementById("fTo").value;
-    var st=document.getElementById("fStatus").value;
-    var ch=document.getElementById("fChannel").value;
+    var from=document.getElementById("fFrom").value, to=document.getElementById("fTo").value;
+    var st=document.getElementById("fStatus").value, ch=document.getElementById("fChannel").value;
     return allRows.filter(function(d){
       if(st && d.trangThai!==st) return false;
       if(ch && (""+(d.kenh||"")).indexOf(ch)<0) return false;
@@ -439,10 +486,8 @@
       return true;
     });
   }
-
   function applyFilter(){
-    var rows=getFiltered();
-    renderStats(rows);
+    var rows=getFiltered(); renderStats(rows);
     var body=document.getElementById("listBody");
     if(!rows.length){ body.innerHTML='<tr><td colspan="9" class="muted">Không có đơn phù hợp.</td></tr>'; return; }
     body.innerHTML="";
@@ -457,25 +502,21 @@
       body.appendChild(tr);
     });
   }
-
   function renderStats(rows){
     var done=rows.filter(function(r){return r.trangThai==="Đã hoàn thành";}).length;
     var proc=rows.filter(function(r){return r.trangThai==="Đang xử lý";}).length;
     var wait=rows.length-done-proc;
     document.getElementById("statCards").innerHTML=
-      '<div class="card"><b>'+rows.length+'</b><span>Tổng đơn (theo bộ lọc)</span></div>'+
-      '<div class="card"><b style="color:#9aa0a6">'+wait+'</b><span>Chưa hoàn thành</span></div>'+
-      '<div class="card"><b style="color:#b46a00">'+proc+'</b><span>Đang xử lý</span></div>'+
-      '<div class="card"><b style="color:#1b7f3b">'+done+'</b><span>Đã hoàn thành</span></div>';
+      '<div class="scell"><b>'+rows.length+'</b><span>Tổng đơn (theo bộ lọc)</span></div>'+
+      '<div class="scell"><b style="color:#9aa0a6">'+wait+'</b><span>Chưa hoàn thành</span></div>'+
+      '<div class="scell"><b style="color:#b46a00">'+proc+'</b><span>Đang xử lý</span></div>'+
+      '<div class="scell"><b style="color:#1b7f3b">'+done+'</b><span>Đã hoàn thành</span></div>';
   }
-
   function clearFilter(){
     ["fSearch","fFrom","fTo"].forEach(function(id){document.getElementById(id).value="";});
-    document.getElementById("fStatus").value="";
-    document.getElementById("fChannel").value="";
+    document.getElementById("fStatus").value=""; document.getElementById("fChannel").value="";
     applyFilter();
   }
-
   function exportCSV(){
     var rows=getFiltered();
     if(!rows.length){ alert("Không có dữ liệu để xuất."); return; }
@@ -484,12 +525,9 @@
       ["diaChi","Địa chỉ"],["loaiKN","Loại KN"],["maDonHang","Mã đơn hàng"],["maVanDon","Mã vận đơn"],
       ["sanPham","Sản phẩm"],["noiDung","Nội dung KN"],["yeuCau","Yêu cầu KH"],["phuongAn","Phương án"]];
     var head=cols.map(function(c){return '"'+c[1]+'"';}).join(",");
-    var body=rows.map(function(d){
-      return cols.map(function(c){ return '"'+(""+(d[c[0]]||"")).replace(/"/g,'""')+'"'; }).join(",");
-    }).join("\n");
-    var csv=head+"\n"+body;
+    var body=rows.map(function(d){ return cols.map(function(c){ return '"'+(""+(d[c[0]]||"")).replace(/"/g,'""')+'"'; }).join(","); }).join("\n");
     var a=document.createElement("a");
-    a.href=URL.createObjectURL(new Blob(["﻿"+csv],{type:"text/csv;charset=utf-8;"}));
+    a.href=URL.createObjectURL(new Blob(["﻿"+head+"\n"+body],{type:"text/csv;charset=utf-8;"}));
     a.download="khieunai_"+new Date().toISOString().slice(0,10)+".csv";
     a.click();
   }
