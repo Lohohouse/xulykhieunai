@@ -333,7 +333,7 @@
     "sanPham","noiDung","yeuCau","xuLyDeNghi","boPhan",
     "ngayNhanDon","gioNhan","xacNhanKhac","lyDo","phuongAn","trangThai"];
   var CHK_FIELDS = ["kenh","loaiKN","xacNhanKN","nguoiXuLy","chucVu"];
-  var CV_CN = {"CSKH":"客服","Xuất kho":"出库","Kế toán nội bộ":"内部会计","Đóng gói":"包装"};
+  var CV_CN = {"Chủ quản":"主管","CSKH":"客服","Xuất kho":"出库","Kế toán nội bộ":"内部会计","Đóng gói":"包装"};
   var DATE_FIELDS = ["ngayLapDon","ngayDatHang","ngayDongHang","ngayNhanDon"];
   var TIME_FIELDS = ["gioLap","gioNhan"];
   function _pad(n){ return ("0"+n).slice(-2); }
@@ -444,8 +444,7 @@
   }
   function rolesArr(cv){ return (cv||"").split(",").map(function(s){return s.trim();}).filter(Boolean); }
   function buildSign(cv){
-    var roles=rolesArr(cv), host=document.getElementById("p_sign");
-    if(!roles.length){ roles=["NGƯỜI XỬ LÝ"]; }
+    var roles=["Chủ quản"].concat(rolesArr(cv)), host=document.getElementById("p_sign");
     host.style.gridTemplateColumns="repeat("+roles.length+",1fr)";
     host.innerHTML=roles.map(function(r){
       var cn=CV_CN[r]?(" "+CV_CN[r]):"";
@@ -453,9 +452,8 @@
     }).join("");
   }
   function updateSignPreview(){
-    var roles=rolesArr(getChecked("chucVu")), host=document.getElementById("signPreview");
-    if(!roles.length){ host.innerHTML='<span class="signprev-empty">Chưa chọn chức vụ nào.</span>'; host.style.gridTemplateColumns="1fr"; return; }
-    host.style.gridTemplateColumns="repeat("+Math.min(roles.length,2)+",1fr)";
+    var roles=["Chủ quản"].concat(rolesArr(getChecked("chucVu"))), host=document.getElementById("signPreview");
+    host.style.gridTemplateColumns="repeat("+Math.min(roles.length,3)+",1fr)";
     host.innerHTML=roles.map(function(r){
       var cn=CV_CN[r]?(" "+CV_CN[r]):"";
       return '<div class="sp"><b>'+r+'<small>'+cn+'</small></b><i>(ký tay khi in)</i></div>';
