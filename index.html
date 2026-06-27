@@ -112,6 +112,12 @@
   #printsheet .sign div{border-right:1px solid #000; min-height:96px; padding:6px; text-align:center; font-weight:700;}
   #printsheet .sign div:last-child{border-right:none;}
   #printsheet .sign small{display:block; font-weight:400; color:#444;}
+  .signprev{display:grid; grid-template-columns:repeat(2,1fr); gap:10px;}
+  .signprev .sp{border:1px solid var(--bd); border-radius:10px; min-height:78px; padding:10px 12px; background:#faf8f5;}
+  .signprev .sp b{font-size:13px; color:var(--brand); display:block;}
+  .signprev .sp small{font-size:11px; color:#999;}
+  .signprev .sp i{display:block; margin-top:18px; font-style:normal; color:#bbb; font-size:11px;}
+  .signprev-empty{color:#999; font-size:13px;}
 </style>
 </head>
 <body>
@@ -189,9 +195,24 @@
   <div class="card">
     <h3>② Đơn vị chịu trách nhiệm xử lý <small>负责处理单位</small></h3>
     <div class="grid">
-      <div class="field"><label>Người xử lý <small>处理人</small></label><textarea id="nguoiXuLy" placeholder="Một hoặc nhiều người, mỗi người 1 dòng"></textarea></div>
-      <div class="field"><label>Chức vụ <small>职位</small></label><textarea id="chucVu" placeholder="Chức vụ tương ứng"></textarea></div>
-      <div class="field"><label>Bộ phận <small>部门</small></label><input id="boPhan" placeholder="Bộ phận"></div>
+      <div class="field full"><label>Người xử lý <small>处理人</small></label>
+        <div class="checks">
+          <label><input type="checkbox" name="nguoiXuLy" value="Nguyễn Ngọc Huyền Hòa">Nguyễn Ngọc Huyền Hòa</label>
+          <label><input type="checkbox" name="nguoiXuLy" value="Nguyễn Thị Tuyết Nhung">Nguyễn Thị Tuyết Nhung</label>
+          <label><input type="checkbox" name="nguoiXuLy" value="Thạch Văn Tèo">Thạch Văn Tèo</label>
+          <label><input type="checkbox" name="nguoiXuLy" value="Đỗ Văn Tài">Đỗ Văn Tài</label>
+          <label><input type="checkbox" name="nguoiXuLy" value="Dương Thanh Tùng">Dương Thanh Tùng</label>
+        </div>
+      </div>
+      <div class="field full"><label>Chức vụ <small>职位</small></label>
+        <div class="checks">
+          <label><input type="checkbox" name="chucVu" value="CSKH">CSKH</label>
+          <label><input type="checkbox" name="chucVu" value="Xuất kho">Xuất kho</label>
+          <label><input type="checkbox" name="chucVu" value="Kế toán nội bộ">Kế toán nội bộ</label>
+          <label><input type="checkbox" name="chucVu" value="Đóng gói">Đóng gói</label>
+        </div>
+      </div>
+      <div class="field"><label>Bộ phận <small>部门</small></label><input id="boPhan" value="Marketing" readonly></div>
       <div class="field"><label>Ngày nhận đơn <small>受理日期</small></label>
         <div class="twogrid"><input type="date" id="ngayNhanDon"><input type="time" id="gioNhan"></div>
       </div>
@@ -213,12 +234,8 @@
 
   <div class="card">
     <h3>③ Ký xác nhận đã xử lý <small>相关单位签核处理</small></h3>
-    <div class="grid">
-      <div class="field"><label>Chủ quản <small>主管</small></label><input id="kyChuQuan" placeholder="Tên ký"></div>
-      <div class="field"><label>Kế toán <small>会计</small></label><input id="kyKeToan" placeholder="Tên ký"></div>
-      <div class="field"><label>Xuất kho <small>出库</small></label><input id="kyXuatKho" placeholder="Tên ký"></div>
-      <div class="field"><label>CSKH <small>客服</small></label><input id="kyCSKH" placeholder="Tên ký"></div>
-    </div>
+    <p style="font-size:13px;color:#666;margin:0 0 10px">Ô ký <b>để trống</b> (ký tay khi in). Nhãn mỗi ô ký = <b>Chức vụ</b> đã tick ở mục ②. Bản in sẽ ra đúng các ô dưới đây:</p>
+    <div id="signPreview" class="signprev"><span class="signprev-empty">Chưa chọn chức vụ nào.</span></div>
   </div>
 </div>
 
@@ -280,12 +297,7 @@
     <tr><td class="pl">Trạng thái xử lý <small>处理状态</small></td><td colspan="3"><span class="v" id="p_trangThai"></span></td></tr>
   </table>
   <div class="band" style="border:1px solid #000;border-top:none;">ĐƠN VỊ LIÊN QUAN KÝ XÁC NHẬN ĐÃ XỬ LÝ 相关单位签核处理</div>
-  <div class="sign">
-    <div><small>CHỦ QUẢN 主管</small><span class="v" id="p_kyChuQuan"></span></div>
-    <div><small>KẾ TOÁN 会计</small><span class="v" id="p_kyKeToan"></span></div>
-    <div><small>XUẤT KHO 出库</small><span class="v" id="p_kyXuatKho"></span></div>
-    <div><small>CSKH 客服</small><span class="v" id="p_kyCSKH"></span></div>
-  </div>
+  <div class="sign" id="p_sign"></div>
 </div>
 
 <div id="stats">
@@ -318,10 +330,10 @@
 
   var TEXT_FIELDS = ["nguoiLapDon","donViLap","ngayLapDon","gioLap","tenKH","sdt",
     "kenhKhac","diaChi","loaiKNKhac","maDonHang","maVanDon","ngayDatHang","ngayDongHang",
-    "sanPham","noiDung","yeuCau","xuLyDeNghi","nguoiXuLy","chucVu","boPhan",
-    "ngayNhanDon","gioNhan","xacNhanKhac","lyDo","phuongAn","trangThai",
-    "kyChuQuan","kyKeToan","kyXuatKho","kyCSKH"];
-  var CHK_FIELDS = ["kenh","loaiKN","xacNhanKN"];
+    "sanPham","noiDung","yeuCau","xuLyDeNghi","boPhan",
+    "ngayNhanDon","gioNhan","xacNhanKhac","lyDo","phuongAn","trangThai"];
+  var CHK_FIELDS = ["kenh","loaiKN","xacNhanKN","nguoiXuLy","chucVu"];
+  var CV_CN = {"CSKH":"客服","Xuất kho":"出库","Kế toán nội bộ":"内部会计","Đóng gói":"包装"};
   var DATE_FIELDS = ["ngayLapDon","ngayDatHang","ngayDongHang","ngayNhanDon"];
   var TIME_FIELDS = ["gioLap","gioNhan"];
   function _pad(n){ return ("0"+n).slice(-2); }
@@ -350,6 +362,8 @@
     document.getElementById("gioLap").value=t.toTimeString().slice(0,5);
     if(!configured){ document.getElementById("cfgWarn").style.display="block"; }
     setupMirror();
+    document.querySelectorAll('input[name="chucVu"]').forEach(function(c){ c.addEventListener("change", updateSignPreview); });
+    updateSignPreview();
     fetchNextCode();
     refreshBadge();
     loadList();
@@ -379,7 +393,7 @@
       .map(function(c){return c.value;}).join(", ");
   }
   function setChecked(name, val){
-    var set=(val||"").split(",").map(function(s){return s.trim();});
+    var set=(val||"").split(/[\n,]/).map(function(s){return s.trim();});
     document.querySelectorAll('input[name="'+name+'"]').forEach(function(c){ c.checked = set.indexOf(c.value)>=0; });
   }
   function collect(){
@@ -399,6 +413,7 @@
     document.getElementById("lyDo").dataset.touched="1";
     document.getElementById("phuongAn").dataset.touched="1";
     setCode(d.maDon||"");
+    updateSignPreview();
     refreshBadge();
   }
 
@@ -423,6 +438,28 @@
         var v=sp.getAttribute("data-v"); sp.textContent=(sel.indexOf(v)>=0?"☑ ":"☐ ")+v;
       });
     });
+    document.getElementById("p_nguoiXuLy").textContent=rolesArr(d.nguoiXuLy).join("\n");
+    document.getElementById("p_chucVu").textContent=rolesArr(d.chucVu).join("\n");
+    buildSign(d.chucVu||"");
+  }
+  function rolesArr(cv){ return (cv||"").split(",").map(function(s){return s.trim();}).filter(Boolean); }
+  function buildSign(cv){
+    var roles=rolesArr(cv), host=document.getElementById("p_sign");
+    if(!roles.length){ roles=["NGƯỜI XỬ LÝ"]; }
+    host.style.gridTemplateColumns="repeat("+roles.length+",1fr)";
+    host.innerHTML=roles.map(function(r){
+      var cn=CV_CN[r]?(" "+CV_CN[r]):"";
+      return '<div><small>'+r.toUpperCase()+cn+'</small></div>';
+    }).join("");
+  }
+  function updateSignPreview(){
+    var roles=rolesArr(getChecked("chucVu")), host=document.getElementById("signPreview");
+    if(!roles.length){ host.innerHTML='<span class="signprev-empty">Chưa chọn chức vụ nào.</span>'; host.style.gridTemplateColumns="1fr"; return; }
+    host.style.gridTemplateColumns="repeat("+Math.min(roles.length,2)+",1fr)";
+    host.innerHTML=roles.map(function(r){
+      var cn=CV_CN[r]?(" "+CV_CN[r]):"";
+      return '<div class="sp"><b>'+r+'<small>'+cn+'</small></b><i>(ký tay khi in)</i></div>';
+    }).join("");
   }
   function doPrint(){ syncPrint(); window.print(); }
   function openSheet(){ window.open(SHEET_URL,"_blank"); }
@@ -453,7 +490,9 @@
     document.querySelectorAll('input[type=checkbox]').forEach(function(c){c.checked=false;});
     document.getElementById("nguoiLapDon").value=DEFAULT_NGUOI_LAP;
     document.getElementById("donViLap").value="CSKH";
+    document.getElementById("boPhan").value="Marketing";
     document.getElementById("trangThai").value="Chưa hoàn thành";
+    updateSignPreview();
     document.getElementById("lyDo").dataset.touched=""; document.getElementById("phuongAn").dataset.touched="";
     var t=new Date();
     document.getElementById("ngayLapDon").value=t.toISOString().slice(0,10);
