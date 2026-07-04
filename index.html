@@ -41,6 +41,10 @@
   .field input:focus, .field textarea:focus, .field select:focus{border-color:var(--brand2); box-shadow:0 0 0 3px rgba(168,131,90,.15); outline:none;}
   .codepill{display:inline-block; background:var(--pink); color:var(--brand); font-weight:800; font-size:15px; padding:8px 14px; border-radius:9px; letter-spacing:.5px;}
   .codepill small{font-weight:400;color:#a98;}
+  .codepill-input{background:var(--pink); color:var(--brand); font-weight:800; font-size:15px; padding:8px 14px; border:1px dashed var(--brand2); border-radius:9px; letter-spacing:.5px; width:170px; text-transform:uppercase;}
+  .codepill-input:focus{outline:none; border-style:solid; box-shadow:0 0 0 3px rgba(168,131,90,.15);}
+  .btn-mini{border:1px solid var(--bd); background:#fff; color:#555; border-radius:8px; padding:7px 11px; font-size:12.5px; font-weight:700; cursor:pointer;}
+  .btn-mini:hover{border-color:var(--brand2); color:var(--brand);}
   .checks{display:flex; flex-wrap:wrap; gap:9px;}
   .checks label{display:inline-flex; align-items:center; gap:7px; border:1px solid var(--bd); padding:8px 12px; border-radius:9px; font-size:13.5px; cursor:pointer; background:#fff;}
   .checks label:hover{border-color:var(--brand2);}
@@ -139,7 +143,12 @@
   <div class="card">
     <h3>Đơn xử lý khiếu nại sàn TMĐT <small>客诉处理单</small></h3>
     <div class="grid">
-      <div class="field"><label>Mã đơn <small>客诉编号</small></label><div class="codepill"><span id="maDonView">—</span> <small>(tự động)</small></div></div>
+      <div class="field"><label>Mã đơn <small>客诉编号</small> <small style="color:#a98;font-weight:400">— tự động, có thể sửa</small></label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input id="maDonInput" class="codepill-input" spellcheck="false" oninput="currentMaDon=this.value.trim()">
+          <button type="button" class="btn-mini" onclick="resetCode()">↺ Mã tự động</button>
+        </div>
+      </div>
       <div class="field"><label>Trạng thái xử lý <small>处理状态</small></label>
         <select id="trangThai" onchange="refreshBadge()">
           <option value="Chưa hoàn thành">Chưa hoàn thành 未完成</option>
@@ -354,6 +363,7 @@
   var DEFAULT_NGUOI_LAP = "Nguyễn Ngọc Huyền Hòa";
   var configured = SCRIPT_URL && SCRIPT_URL.indexOf("script.google.com")>=0;
   var currentMaDon = "";
+  var originalMaDon = "";
   var allRows = [];
 
   window.addEventListener("DOMContentLoaded", function(){
@@ -381,7 +391,8 @@
     var d=new Date(), mm=("0"+(d.getMonth()+1)).slice(-2), yy=(""+d.getFullYear()).slice(-2);
     return "KN"+mm+yy+"-001";
   }
-  function setCode(c){ currentMaDon=c; document.getElementById("maDonView").textContent=c; }
+  function setCode(c){ currentMaDon=c; var el=document.getElementById("maDonInput"); if(el) el.value=c; }
+  function resetCode(){ if(originalMaDon){ setCode(originalMaDon); } else { fetchNextCode(); } }
   function fetchNextCode(){
     if(!configured){ setCode(localCode()+" (thử)"); return; }
     fetch(SCRIPT_URL+"?action=next").then(function(r){return r.json();})
@@ -397,7 +408,8 @@
     document.querySelectorAll('input[name="'+name+'"]').forEach(function(c){ c.checked = set.indexOf(c.value)>=0; });
   }
   function collect(){
-    var d={maDon:currentMaDon};
+    var mv=(document.getElementById("maDonInput").value||"").trim(); currentMaDon=mv;
+    var d={maDon:mv, maDonGoc:originalMaDon};
     TEXT_FIELDS.forEach(function(id){ d[id]=(document.getElementById(id)||{}).value||""; });
     CHK_FIELDS.forEach(function(n){ d[n]=getChecked(n); });
     return d;
@@ -413,6 +425,7 @@
     document.getElementById("lyDo").dataset.touched="1";
     document.getElementById("phuongAn").dataset.touched="1";
     setCode(d.maDon||"");
+    originalMaDon=d.maDon||"";
     updateSignPreview();
     refreshBadge();
   }
@@ -475,8 +488,8 @@
     fetch(SCRIPT_URL, { method:"POST", body: JSON.stringify({action:"save", data:data}) })
     .then(function(r){return r.json();})
     .then(function(res){
-      if(res.ok){ setCode(res.maDon);
-        hint.textContent="✓ Đã lưu "+new Date().toLocaleTimeString("vi-VN")+" ("+(res.action==="update"?"cập nhật":"đơn mới")+")";
+      if(res.ok){ setCode(res.maDon); originalMaDon=res.maDon;
+        hint.textContent="✓ Đã lưu "+new Date().toLocaleTimeString("vi-VN")+" ("+(res.action==="update"?"cập nhật":(res.action==="move"?"đổi mã/chuyển tháng":"đơn mới"))+")";
         loadList();
       } else { hint.textContent="Lỗi: "+(res.error||"không rõ"); }
     }).catch(function(e){ hint.textContent="Lỗi mạng: "+e.message; });
@@ -496,7 +509,7 @@
     document.getElementById("ngayLapDon").value=t.toISOString().slice(0,10);
     document.getElementById("gioLap").value=t.toTimeString().slice(0,5);
     document.getElementById("saveHint").textContent="";
-    fetchNextCode(); refreshBadge(); window.scrollTo(0,0);
+    originalMaDon=""; fetchNextCode(); refreshBadge(); window.scrollTo(0,0);
   }
 
   function jumpStats(){ document.getElementById("stats").scrollIntoView({behavior:"smooth"}); }
