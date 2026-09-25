@@ -221,6 +221,15 @@
   .acc-box .login-btn:hover{background:rgba(255,255,255,.24);}
   .guestnote{background:#fff8ea; border:1px solid #f0d9a8; color:#8a6d2f; border-radius:10px; padding:10px 14px; font-size:13.5px;}
   .rowbtn.del{background:#fdecec; color:#c0392b;}
+
+  /* ---------- Tổng quan ---------- */
+  .ov-cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:14px; margin-bottom:16px;}
+  .ov-card{background:#fff; border:1px solid var(--bd); border-radius:14px; padding:16px 18px; box-shadow:0 2px 10px rgba(0,0,0,.05);}
+  .ov-card .k{font-size:12.5px; color:#888; font-weight:700;}
+  .ov-card .v{font-size:30px; font-weight:800; color:var(--brand); margin-top:4px; line-height:1.1;}
+  .ov-card .s{font-size:11.5px; color:#9aa0aa; margin-top:3px;}
+  .ov-card.warn{border-left:5px solid #b46a00;}
+  .ov-card.warn .v{color:#b46a00;}
 </style>
 </head>
 <body>
@@ -229,6 +238,7 @@
   <div class="side-brand"><div class="lg">LH</div><div class="tt"><b>LOHO HOUSE</b><span>Xử lý khiếu nại · 客诉处理</span></div></div>
   <div class="side-lbl">Chức năng · 功能</div>
   <nav class="side-nav">
+    <button class="nav-item" data-view="overview" onclick="switchView('overview')" style="display:none"><span class="vn"><span class="ic">📊</span>Tổng quan</span><span class="cn">总览</span></button>
     <button class="nav-item active" data-view="create" onclick="switchView('create')"><span class="vn"><span class="ic">📝</span>Tạo đơn</span><span class="cn">创建客诉单</span></button>
     <button class="nav-item" data-view="approve" onclick="switchView('approve')"><span class="vn"><span class="ic">✅</span>Duyệt đơn <span id="pendCount" class="nav-badge" style="display:none">0</span></span><span class="cn">审核单据</span></button>
     <button class="nav-item" data-view="list" onclick="switchView('list')"><span class="vn"><span class="ic">📋</span>Danh sách</span><span class="cn">单据列表</span></button>
@@ -238,6 +248,20 @@
 <main class="main">
 <div id="cfgWarn">Chưa cấu hình link Google Sheet. Mở file index.html, dán URL Apps Script vào dòng SCRIPT_URL.</div>
 
+
+<!-- ================= TAB: TỔNG QUAN ================= -->
+<div id="view-overview" class="view">
+ <div class="wrap">
+  <div class="toolrow"><h2 class="sectitle" style="margin:0">📊 Tổng quan · 总览</h2><span class="grow"></span><span id="ovInfo" class="savehint"></span><button class="btn btn-ghost" onclick="loadList()">↻ Làm mới</button></div>
+  <div class="ov-cards" id="ovCards"></div>
+  <div class="card">
+    <h3>Thống kê đơn theo lý do &amp; kênh <small>按客诉原因 / 平台</small></h3>
+    <div class="tablewrap" style="max-height:none">
+      <table class="lt" id="ovReasonTable"></table>
+    </div>
+  </div>
+ </div>
+</div>
 
 <!-- ================= TAB 1: TẠO ĐƠN ================= -->
 <div id="view-create" class="view active">
@@ -577,11 +601,13 @@
   function switchView(name){
     if(name==="approve" && AUTH.role!=="manager") name="create";
     if(name==="list" && !(AUTH.role==="manager"||AUTH.role==="staff")) name="create";
+    if(name==="overview" && !(AUTH.role==="manager"||AUTH.role==="staff")) name="create";
     currentView=name;
     document.querySelectorAll(".nav-item").forEach(function(t){ t.classList.toggle("active", t.getAttribute("data-view")===name); });
     document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); });
     document.getElementById("view-"+name).classList.add("active");
     if(name==="list") renderList();
+    if(name==="overview") renderOverview();
     if(name==="approve" && approveUnlocked) renderApprove();
     window.scrollTo(0,0);
   }
@@ -680,7 +706,7 @@
     var body=document.getElementById("listBody"); if(body) body.innerHTML='<tr><td colspan="10" class="muted">Đang tải...</td></tr>';
     fetch(SCRIPT_URL+"?action=list").then(function(r){return r.json();})
       .then(function(rows){ allRows=rows||[]; rowsByCode={}; allRows.forEach(function(d){ rowsByCode[d.maDon]=d; });
-        renderList(); if(approveUnlocked) renderApprove(); updatePendCount(); })
+        renderList(); if(approveUnlocked) renderApprove(); updatePendCount(); renderOverview(); })
       .catch(function(e){ if(body) body.innerHTML='<tr><td colspan="10" class="muted" style="color:#c00">Lỗi tải: '+esc(e.message)+'</td></tr>'; });
   }
   function updatePendCount(){ var n=allRows.filter(function(d){return (d.trangThai||"Chờ duyệt")==="Chờ duyệt";}).length;
@@ -803,6 +829,58 @@
     a.download="khieunai_"+new Date().toISOString().slice(0,10)+".csv"; a.click();
   }
 
+
+  /* ============ TỔNG QUAN ============ */
+  function _iso(d){ return d.getFullYear()+"-"+_pad(d.getMonth()+1)+"-"+_pad(d.getDate()); }
+  function _firstOfWeek(d){ var x=new Date(d); var day=(x.getDay()+6)%7; x.setDate(x.getDate()-day); x.setHours(0,0,0,0); return x; }
+  function ovCard(k,v,s,warn){ return '<div class="ov-card'+(warn?' warn':'')+'"><div class="k">'+k+'</div><div class="v">'+v+'</div><div class="s">'+(s||'')+'</div></div>'; }
+  function renderOverview(){
+    var host=document.getElementById("ovCards"); if(!host) return;
+    var now=new Date(), ym=now.getFullYear()+"-"+_pad(now.getMonth()+1);
+    var wk0=_firstOfWeek(now), wk1=new Date(wk0); wk1.setDate(wk0.getDate()+6);
+    var total=allRows.length, mon=0, wkn=0, cho=0, xuly=0, xong=0;
+    allRows.forEach(function(r){
+      var nd=(""+(r.ngayLapDon||"")).slice(0,10);
+      if(nd.slice(0,7)===ym) mon++;
+      if(nd){ var d=new Date(nd+"T00:00:00"); if(d>=wk0 && d<=wk1) wkn++; }
+      var st=r.trangThai||"Chờ duyệt";
+      if(st==="Chờ duyệt")cho++; else if(st==="Đang xử lý")xuly++; else if(st==="Đã hoàn thành")xong++;
+    });
+    document.getElementById("ovInfo").textContent="Cập nhật "+now.toLocaleString("vi-VN");
+    host.innerHTML=
+      ovCard("Đơn trong tháng",mon,"T"+(now.getMonth()+1)+"."+now.getFullYear())+
+      ovCard("Đơn trong tuần",wkn,fmtDate(_iso(wk0))+" → "+fmtDate(_iso(wk1)))+
+      ovCard("Chờ duyệt",cho,"cần quản lý duyệt",true)+
+      ovCard("Đang xử lý",xuly,"")+
+      ovCard("Đã hoàn thành",xong,"")+
+      ovCard("Tổng đơn",total,"tất cả các tháng");
+    renderReasonTable();
+  }
+  function renderReasonTable(){
+    var el=document.getElementById("ovReasonTable"); if(!el) return;
+    var chans=["Shopee","Tiktok","Website"];
+    var reasons=["Thiếu hàng","Hàng bị hư hỏng","Gửi nhầm hàng","Màu sơn không chuẩn","Chất lượng không tốt","Khác"];
+    var cnt={}; reasons.forEach(function(r){ cnt[r]={t:0}; chans.forEach(function(c){cnt[r][c]=0;}); });
+    var colTot={}; chans.forEach(function(c){colTot[c]=0;}); var grand=0;
+    allRows.forEach(function(row){
+      var rls=(row.loaiKN||"").split(",").map(function(s){return s.trim();}).filter(Boolean); if(!rls.length) rls=["Khác"];
+      var kn=(row.kenh||"");
+      rls.forEach(function(rr){ var key=cnt[rr]?rr:"Khác";
+        chans.forEach(function(c){ if(kn.indexOf(c)>=0){ cnt[key][c]++; cnt[key].t++; colTot[c]++; grand++; } });
+      });
+    });
+    var h='<thead><tr><th>Lý do khiếu nại</th>';
+    chans.forEach(function(c){ h+='<th style="text-align:center">'+c+'</th>'; });
+    h+='<th style="text-align:center">Tổng</th></tr></thead><tbody>';
+    reasons.forEach(function(r){ h+='<tr><td>'+r+'</td>';
+      chans.forEach(function(c){ h+='<td style="text-align:center">'+cnt[r][c]+'</td>'; });
+      h+='<td style="text-align:center;font-weight:800">'+cnt[r].t+'</td></tr>'; });
+    h+='<tr style="font-weight:800;background:#faf8f5"><td>TỔNG</td>';
+    chans.forEach(function(c){ h+='<td style="text-align:center">'+colTot[c]+'</td>'; });
+    h+='<td style="text-align:center">'+grand+'</td></tr></tbody>';
+    el.innerHTML=h;
+  }
+
   /* ============ TÀI KHOẢN & PHÂN QUYỀN ============ */
   var AUTH={role:"guest",username:""};
   try{ var _sa=localStorage.getItem("loho_auth"); if(_sa) AUTH=JSON.parse(_sa); }catch(e){}
@@ -851,6 +929,7 @@
     var navL=document.querySelector('.nav-item[data-view="list"]');
     if(navA) navA.style.display=isManager()?"block":"none";
     if(navL) navL.style.display=canEdit()?"block":"none";
+    var navO=document.querySelector('.nav-item[data-view="overview"]'); if(navO) navO.style.display=canEdit()?"block":"none";
     document.getElementById("createActions").style.display=canEdit()?"flex":"none";
     document.getElementById("guestNote").style.display=canEdit()?"none":"inline-block";
     approveUnlocked=isManager();
