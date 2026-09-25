@@ -256,6 +256,12 @@
   <div class="ov-cards" id="ovCards"></div>
   <div class="card">
     <h3>Thống kê đơn theo lý do &amp; kênh <small>按客诉原因 / 平台</small></h3>
+    <div class="filters" style="margin-bottom:12px">
+      <div class="fld"><label>Từ ngày</label><input type="date" id="ovFrom" onchange="renderReasonTable()"></div>
+      <div class="fld"><label>Đến ngày</label><input type="date" id="ovTo" onchange="renderReasonTable()"></div>
+      <div class="fld"><label>&nbsp;</label><button class="btn btn-ghost" onclick="clearOvFilter()">Xóa lọc</button></div>
+    </div>
+    <div id="ovReasonInfo" class="savehint" style="margin-bottom:8px"></div>
     <div class="tablewrap" style="max-height:none">
       <table class="lt" id="ovReasonTable"></table>
     </div>
@@ -856,13 +862,17 @@
       ovCard("Tổng đơn",total,"tất cả các tháng");
     renderReasonTable();
   }
+  function clearOvFilter(){ var f=document.getElementById("ovFrom"),t=document.getElementById("ovTo"); if(f)f.value=""; if(t)t.value=""; renderReasonTable(); }
   function renderReasonTable(){
     var el=document.getElementById("ovReasonTable"); if(!el) return;
+    var from=(document.getElementById("ovFrom")||{}).value||"", to=(document.getElementById("ovTo")||{}).value||"";
+    var rows=allRows.filter(function(r){ var nd=(""+(r.ngayLapDon||"")).slice(0,10); if((from||to)&&!nd) return false; if(from&&nd<from) return false; if(to&&nd>to) return false; return true; });
+    var info=document.getElementById("ovReasonInfo"); if(info){ info.textContent=(from||to)?("Khoảng: "+(from?fmtDate(from):"…")+" → "+(to?fmtDate(to):"…")+" · "+rows.length+" đơn"):("Tất cả: "+rows.length+" đơn"); }
     var chans=["Shopee","Tiktok","Website"];
     var reasons=["Thiếu hàng","Hàng bị hư hỏng","Gửi nhầm hàng","Màu sơn không chuẩn","Chất lượng không tốt","Khác"];
     var cnt={}; reasons.forEach(function(r){ cnt[r]={t:0}; chans.forEach(function(c){cnt[r][c]=0;}); });
     var colTot={}; chans.forEach(function(c){colTot[c]=0;}); var grand=0;
-    allRows.forEach(function(row){
+    rows.forEach(function(row){
       var rls=(row.loaiKN||"").split(",").map(function(s){return s.trim();}).filter(Boolean); if(!rls.length) rls=["Khác"];
       var kn=(row.kenh||"");
       rls.forEach(function(rr){ var key=cnt[rr]?rr:"Khác";
