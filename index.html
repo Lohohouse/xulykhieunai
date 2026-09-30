@@ -135,7 +135,7 @@
       min-height:277mm; font-family:"Times New Roman","Songti SC",serif; color:#000;}
     body.pm-list #printlist{display:block; font-family:"Times New Roman",serif; color:#000;}
   }
-  #printsheet{--pf:14px; font-size:var(--pf); color:#000; padding:0 2mm;}
+  #printsheet{--pf:16px; font-size:var(--pf); color:#000; padding:0 2mm;}
   #printsheet .phead{display:grid; grid-template-columns:28mm 1fr 40mm; align-items:center; margin-bottom:6px;}
   #printsheet .plogo{text-align:center; line-height:1.05;}
   #printsheet .plogo .l1{font-size:14px; font-weight:800; letter-spacing:1px;}
@@ -154,8 +154,8 @@
   #printsheet .pl{font-weight:700; line-height:1.15;}
   #printsheet .pl small{font-weight:400; color:#555; display:inline; margin-left:4px;}
   #printsheet .v{white-space:pre-wrap; word-break:break-word;}
-  #printsheet .pcol{column-count:2; column-gap:14px;}
-  #printsheet .pchk{display:block; margin-bottom:2px;}
+  #printsheet .pcol{display:flex; flex-wrap:wrap; column-gap:20px; row-gap:2px;}
+  #printsheet .pchk{display:inline-block; margin:0 14px 2px 0; white-space:nowrap;}
   #printsheet .sign{display:grid; grid-template-columns:repeat(4,1fr); border:1px solid #000; border-top:none;}
   #printsheet .sign div{border-right:1px solid #000; min-height:96px; padding:6px; text-align:center; font-weight:700;}
   #printsheet .sign div:last-child{border-right:none;}
@@ -524,14 +524,6 @@
         <td class="pl">Chức vụ <small>职位</small></td><td><span class="v" id="p_chucVu"></span></td></tr>
     <tr><td class="pl">Bộ phận <small>部门</small></td><td colspan="3"><span class="v" id="p_boPhan"></span></td></tr>
     <tr><td class="pl">Ngày nhận đơn <small>受理日期</small></td><td colspan="3"><span class="v" id="p_ngayNhanDon"></span> &nbsp; Giờ: <span class="v" id="p_gioNhan" style="display:inline"></span></td></tr>
-    <tr><td class="pl">Kiểm tra &amp; xác nhận loại KN <small>检查及确认客诉类型</small></td><td colspan="3" id="p_xacNhanKN"><div class="pcol">
-        <span class="pchk" data-g="xacNhanKN" data-v="Thiếu hàng">☐ Thiếu hàng</span>
-        <span class="pchk" data-g="xacNhanKN" data-v="Hàng bị hư hỏng">☐ Hàng bị hư hỏng</span>
-        <span class="pchk" data-g="xacNhanKN" data-v="Gửi nhầm hàng">☐ Gửi nhầm hàng</span>
-        <span class="pchk" data-g="xacNhanKN" data-v="Màu sơn không chuẩn">☐ Màu sơn không chuẩn màu</span>
-        <span class="pchk" data-g="xacNhanKN" data-v="Chất lượng không tốt">☐ Chất lượng không tốt</span>
-        <span class="pchk" data-g="xacNhanKN" data-v="Khác">☐ Khác <span class="v" id="p_xacNhanKhac" style="display:inline"></span></span>
-        </div></td></tr>
     <tr><td class="pl">Nêu rõ lý do <small>说明理由</small></td><td colspan="3"><span class="v" id="p_lyDo"></span></td></tr>
     <tr><td class="pl">Phương án xử lý <small>处理方式</small></td><td colspan="3"><span class="v" id="p_phuongAn"></span></td></tr>
     <tr><td class="pl">Trạng thái xử lý <small>处理状态</small></td><td colspan="3"><span class="v" id="p_trangThai"></span></td></tr>
