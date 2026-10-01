@@ -231,6 +231,10 @@
   .ov-card .s{font-size:11.5px; color:#9aa0aa; margin-top:3px;}
   .ov-card.warn{border-left:5px solid #b9770e;}
   .ov-card.warn .v{color:#b9770e;}
+  .nhomchecks{flex-direction:column; align-items:stretch;}
+  .nhomopt{width:100%; align-items:flex-start;}
+  .nhomopt span{font-size:13px; line-height:1.35;}
+  .nhomopt b{color:var(--brand);}
 </style>
 </head>
 <body>
@@ -324,13 +328,12 @@
           <span class="otherbox"><input type="text" id="kenhKhac" placeholder="Kênh khác..."></span>
         </div>
       </div>
-      <div class="field full"><label>Địa chỉ khách hàng <small>地址</small></label><input id="diaChi" placeholder="Địa chỉ giao hàng"></div>
       <div class="field full"><label>Loại khiếu nại <small>客诉类型</small></label>
         <div class="checks">
           <label><input type="checkbox" name="loaiKN" value="Thiếu hàng">Thiếu hàng</label>
           <label><input type="checkbox" name="loaiKN" value="Hàng bị hư hỏng">Hàng bị hư hỏng</label>
           <label><input type="checkbox" name="loaiKN" value="Gửi nhầm hàng">Gửi nhầm hàng</label>
-          <label><input type="checkbox" name="loaiKN" value="Màu sơn không chuẩn">Màu sơn không chuẩn màu</label>
+          <label><input type="checkbox" name="loaiKN" value="Màu không chuẩn">Màu không chuẩn</label>
           <label><input type="checkbox" name="loaiKN" value="Chất lượng không tốt">Chất lượng không tốt</label>
           <label><input type="checkbox" name="loaiKN" value="Khác">Khác</label>
           <span class="otherbox"><input type="text" id="loaiKNKhac" placeholder="Loại khác..."></span>
@@ -342,7 +345,6 @@
       <div class="field"><label>Ngày đóng hàng <small>包装日</small></label><input type="date" id="ngayDongHang"></div>
       <div class="field full"><label>Sản phẩm khiếu nại <small>客诉产品</small></label><input id="sanPham" placeholder="Tên sản phẩm bị khiếu nại"></div>
       <div class="field full"><label>Nội dung khiếu nại <small>客诉内容</small></label><textarea id="noiDung" placeholder="Mô tả chi tiết khiếu nại"></textarea></div>
-      <div class="field full"><label>Yêu cầu khách hàng <small>客户要求</small></label><textarea id="yeuCau" placeholder="KH yêu cầu gì"></textarea></div>
       <div class="field full"><label>Cách xử lý đề nghị <small>处理方式建议</small></label><textarea id="xuLyDeNghi" placeholder="Đề xuất của người lập đơn"></textarea></div>
     </div>
   </div>
@@ -350,46 +352,20 @@
   <div class="card">
     <h3>② Đơn vị chịu trách nhiệm xử lý <small>负责处理单位</small></h3>
     <div class="grid">
-      <div class="field full"><label>Người xử lý <small>处理人</small></label>
-        <div class="checks">
-          <label><input type="checkbox" name="nguoiXuLy" value="Nguyễn Ngọc Huyền Hòa">Nguyễn Ngọc Huyền Hòa</label>
-          <label><input type="checkbox" name="nguoiXuLy" value="Nguyễn Thị Tuyết Nhung">Nguyễn Thị Tuyết Nhung</label>
-          <label><input type="checkbox" name="nguoiXuLy" value="Thạch Văn Tèo">Thạch Văn Tèo</label>
-          <label><input type="checkbox" name="nguoiXuLy" value="Đỗ Văn Tài">Đỗ Văn Tài</label>
-          <label><input type="checkbox" name="nguoiXuLy" value="Dương Thanh Tùng">Dương Thanh Tùng</label>
-        </div>
-      </div>
-      <div class="field full"><label>Chức vụ <small>职位</small></label>
-        <div class="checks">
-          <label><input type="checkbox" name="chucVu" value="CSKH">CSKH</label>
-          <label><input type="checkbox" name="chucVu" value="Xuất kho">Xuất kho</label>
-          <label><input type="checkbox" name="chucVu" value="Kế toán nội bộ">Kế toán nội bộ</label>
-          <label><input type="checkbox" name="chucVu" value="Đóng gói">Đóng gói</label>
-        </div>
-      </div>
-      <div class="field"><label>Bộ phận <small>部门</small></label><input id="boPhan" value="Marketing" readonly></div>
-      <div class="field"><label>Ngày nhận đơn <small>受理日期</small></label>
-        <div class="twogrid"><input type="date" id="ngayNhanDon"><input type="time" id="gioNhan"></div>
-      </div>
-      <div class="field full"><label>Kiểm tra &amp; xác nhận loại KN <small>检查及确认客诉类型</small></label>
-        <div class="checks">
-          <label><input type="checkbox" name="xacNhanKN" value="Thiếu hàng">Thiếu hàng</label>
-          <label><input type="checkbox" name="xacNhanKN" value="Hàng bị hư hỏng">Hàng bị hư hỏng</label>
-          <label><input type="checkbox" name="xacNhanKN" value="Gửi nhầm hàng">Gửi nhầm hàng</label>
-          <label><input type="checkbox" name="xacNhanKN" value="Màu sơn không chuẩn">Màu sơn không chuẩn màu</label>
-          <label><input type="checkbox" name="xacNhanKN" value="Chất lượng không tốt">Chất lượng không tốt</label>
-          <label><input type="checkbox" name="xacNhanKN" value="Khác">Khác</label>
-          <span class="otherbox"><input type="text" id="xacNhanKhac" placeholder="Khác..."></span>
+      <div class="field full"><label>Nhóm xử lý <small>处理小组</small> — chọn 1 nhóm cho nhanh</label>
+        <div class="checks nhomchecks">
+          <label class="nhomopt"><input type="radio" name="nhom" value="Nhóm 1" onchange="applyNhom()"><span><b>Nhóm 1</b> — Nguyễn Ngọc Huyền Hòa (CSKH), Nguyễn Thị Tuyết Nhung (Xuất kho), Thạch Văn Tèo (Đóng gói), Đỗ Văn Tài (Đóng gói)</span></label>
+          <label class="nhomopt"><input type="radio" name="nhom" value="Nhóm 2" onchange="applyNhom()"><span><b>Nhóm 2</b> — Nguyễn Ngọc Huyền Hòa (CSKH), Nguyễn Thị Tuyết Nhung (Xuất kho), Thạch Văn Tèo (Đóng gói), Dương Thanh Tùng (Đóng gói)</span></label>
+          <label class="nhomopt"><input type="radio" name="nhom" value="Nhóm 3" onchange="applyNhom()"><span><b>Nhóm 3</b> — Nguyễn Ngọc Huyền Hòa (CSKH), Nguyễn Thị Tuyết Nhung (Kế toán nội bộ), Thạch Văn Tèo (Đóng gói), Dương Thanh Tùng (Đóng gói)</span></label>
         </div>
       </div>
       <div class="field full"><label>Nêu rõ lý do <small>说明理由</small></label><textarea id="lyDo" placeholder="Tự lấy theo Nội dung khiếu nại — có thể sửa"></textarea></div>
-      <div class="field full"><label>Phương án xử lý <small>处理方式</small></label><textarea id="phuongAn" placeholder="Tự lấy theo Cách xử lý đề nghị — có thể sửa"></textarea></div>
     </div>
   </div>
 
   <div class="card">
     <h3>③ Ký xác nhận đã xử lý <small>相关单位签核处理</small></h3>
-    <p style="font-size:13px;color:#666;margin:0 0 10px">Ô ký <b>để trống</b> (ký tay khi in). Nhãn mỗi ô ký = <b>Chủ quản</b> + <b>Chức vụ</b> đã tick ở mục ②. Bản in sẽ ra đúng các ô dưới đây:</p>
+    <p style="font-size:13px;color:#666;margin:0 0 10px">Ô ký <b>để trống</b> (ký tay khi in). Nhãn mỗi ô ký = <b>Chủ quản</b> + các <b>chức vụ</b> trong nhóm đã chọn. Bản in sẽ ra đúng các ô dưới đây:</p>
     <div id="signPreview" class="signprev"></div>
   </div>
  </div>
@@ -501,12 +477,11 @@
         <span class="pchk" data-g="kenh" data-v="Lazada">☐ Lazada</span>
         <span class="pchk" data-g="kenh" data-v="Khác">☐ Khác <span class="v" id="p_kenhKhac" style="display:inline"></span></span>
         </div></td></tr>
-    <tr><td class="pl">Địa chỉ khách hàng <small>地址</small></td><td colspan="3"><span class="v" id="p_diaChi"></span></td></tr>
     <tr><td class="pl">Loại khiếu nại <small>客诉类型</small></td><td colspan="3" id="p_loaiKN"><div class="pcol">
         <span class="pchk" data-g="loaiKN" data-v="Thiếu hàng">☐ Thiếu hàng</span>
         <span class="pchk" data-g="loaiKN" data-v="Hàng bị hư hỏng">☐ Hàng bị hư hỏng</span>
         <span class="pchk" data-g="loaiKN" data-v="Gửi nhầm hàng">☐ Gửi nhầm hàng</span>
-        <span class="pchk" data-g="loaiKN" data-v="Màu sơn không chuẩn">☐ Màu sơn không chuẩn màu</span>
+        <span class="pchk" data-g="loaiKN" data-v="Màu không chuẩn">☐ Màu không chuẩn</span>
         <span class="pchk" data-g="loaiKN" data-v="Chất lượng không tốt">☐ Chất lượng không tốt</span>
         <span class="pchk" data-g="loaiKN" data-v="Khác">☐ Khác <span class="v" id="p_loaiKNKhac" style="display:inline"></span></span>
         </div></td></tr>
@@ -516,16 +491,12 @@
         <td class="pl">Ngày đóng hàng <small>包装日</small></td><td><span class="v" id="p_ngayDongHang"></span></td></tr>
     <tr><td class="pl">Sản phẩm khiếu nại <small>客诉产品</small></td><td colspan="3"><span class="v" id="p_sanPham"></span></td></tr>
     <tr><td class="pl">Nội dung khiếu nại <small>客诉内容</small></td><td colspan="3"><span class="v" id="p_noiDung"></span></td></tr>
-    <tr><td class="pl">Yêu cầu khách hàng <small>客户要求</small></td><td colspan="3"><span class="v" id="p_yeuCau"></span></td></tr>
     <tr><td class="pl">Cách xử lý đề nghị <small>处理方式建议</small></td><td colspan="3"><span class="v" id="p_xuLyDeNghi"></span></td></tr>
 
     <tr><td colspan="4" class="band">ĐƠN VỊ CHỊU TRÁCH NHIỆM XỬ LÝ 负责处理单位</td></tr>
     <tr><td class="pl">Người xử lý <small>处理人</small></td><td><span class="v" id="p_nguoiXuLy"></span></td>
         <td class="pl">Chức vụ <small>职位</small></td><td><span class="v" id="p_chucVu"></span></td></tr>
-    <tr><td class="pl">Bộ phận <small>部门</small></td><td colspan="3"><span class="v" id="p_boPhan"></span></td></tr>
-    <tr><td class="pl">Ngày nhận đơn <small>受理日期</small></td><td colspan="3"><span class="v" id="p_ngayNhanDon"></span> &nbsp; Giờ: <span class="v" id="p_gioNhan" style="display:inline"></span></td></tr>
     <tr><td class="pl">Nêu rõ lý do <small>说明理由</small></td><td colspan="3"><span class="v" id="p_lyDo"></span></td></tr>
-    <tr><td class="pl">Phương án xử lý <small>处理方式</small></td><td colspan="3"><span class="v" id="p_phuongAn"></span></td></tr>
     <tr><td class="pl">Trạng thái xử lý <small>处理状态</small></td><td colspan="3"><span class="v" id="p_trangThai"></span></td></tr>
   </table>
   <div class="band" style="border:1px solid #000;border-top:none;">ĐƠN VỊ LIÊN QUAN KÝ XÁC NHẬN ĐÃ XỬ LÝ 相关单位签核处理</div>
@@ -557,13 +528,13 @@
   var PIN_DUYET  = "2626";   // <-- Đổi mã PIN duyệt đơn tại đây
 
   var TEXT_FIELDS = ["nguoiLapDon","donViLap","ngayLapDon","gioLap","tenKH","sdt",
-    "kenhKhac","diaChi","loaiKNKhac","maDonHang","maVanDon","ngayDatHang","ngayDongHang",
-    "sanPham","noiDung","yeuCau","xuLyDeNghi","boPhan",
-    "ngayNhanDon","gioNhan","xacNhanKhac","lyDo","phuongAn","trangThai"];
-  var CHK_FIELDS = ["kenh","loaiKN","xacNhanKN","nguoiXuLy","chucVu"];
+    "kenhKhac","loaiKNKhac","maDonHang","maVanDon","ngayDatHang","ngayDongHang",
+    "sanPham","noiDung","xuLyDeNghi","lyDo","trangThai"];
+  var CHK_FIELDS = ["kenh","loaiKN"];
   var DATE_FIELDS = ["ngayLapDon","ngayDatHang","ngayDongHang","ngayNhanDon"];
   var TIME_FIELDS = ["gioLap","gioNhan"];
   var CV_CN = {"Chủ quản":"主管","CSKH":"客服","Xuất kho":"出库","Kế toán nội bộ":"内部会计","Đóng gói":"包装"};
+  var NHOM = {"Nhóm 1":[["Nguyễn Ngọc Huyền Hòa","CSKH"],["Nguyễn Thị Tuyết Nhung","Xuất kho"],["Thạch Văn Tèo","Đóng gói"],["Đỗ Văn Tài","Đóng gói"]],"Nhóm 2":[["Nguyễn Ngọc Huyền Hòa","CSKH"],["Nguyễn Thị Tuyết Nhung","Xuất kho"],["Thạch Văn Tèo","Đóng gói"],["Dương Thanh Tùng","Đóng gói"]],"Nhóm 3":[["Nguyễn Ngọc Huyền Hòa","CSKH"],["Nguyễn Thị Tuyết Nhung","Kế toán nội bộ"],["Thạch Văn Tèo","Đóng gói"],["Dương Thanh Tùng","Đóng gói"]]};
   var DEFAULT_NGUOI_LAP = "Nguyễn Ngọc Huyền Hòa";
 
   var configured = SCRIPT_URL && SCRIPT_URL.indexOf("script.google.com")>=0;
@@ -589,7 +560,7 @@
     document.getElementById("gioLap").value=t.toTimeString().slice(0,5);
     if(!configured){ document.getElementById("cfgWarn").style.display="block"; }
     setupMirror();
-    document.querySelectorAll('input[name="chucVu"]').forEach(function(c){ c.addEventListener("change", updateSignPreview); });
+    document.querySelectorAll('input[name="nhom"]').forEach(function(c){ c.addEventListener("change", updateSignPreview); });
     updateSignPreview();
     fetchNextCode();
     refreshBadge();
@@ -624,7 +595,7 @@
     document.getElementById("pinGate").style.display="block";
     document.getElementById("pinInput").value=""; }
 
-  function setupMirror(){ linkMirror("noiDung","lyDo"); linkMirror("xuLyDeNghi","phuongAn"); }
+  function setupMirror(){ linkMirror("noiDung","lyDo"); }
   function linkMirror(srcId,dstId){ var src=document.getElementById(srcId),dst=document.getElementById(dstId);
     src.addEventListener("input",function(){ if(dst.dataset.touched!=="1"){ dst.value=src.value; } });
     dst.addEventListener("input",function(){ dst.dataset.touched=(dst.value===""?"":"1"); }); }
@@ -656,16 +627,29 @@
     var d={maDon:mv, maDonGoc:originalMaDon};
     TEXT_FIELDS.forEach(function(id){ d[id]=(document.getElementById(id)||{}).value||""; });
     CHK_FIELDS.forEach(function(n){ d[n]=getChecked(n); });
+    var g=(document.querySelector('input[name="nhom"]:checked')||{}).value||"";
+    if(g && NHOM[g]){ d.nguoiXuLy=NHOM[g].map(function(x){return x[0];}).join(", "); d.chucVu=NHOM[g].map(function(x){return x[1];}).join(", "); }
+    else { d.nguoiXuLy=""; d.chucVu=""; }
+    d.phuongAn=d.xuLyDeNghi||"";
+    d.boPhan="Marketing";
     return d;
   }
+  function inferNhom(d){ var cv=(d.chucVu||""), nm=(d.nguoiXuLy||"");
+    if(cv.indexOf("Kế toán nội bộ")>=0) return "Nhóm 3";
+    if(nm.indexOf("Đỗ Văn Tài")>=0) return "Nhóm 1";
+    if(nm.indexOf("Dương Thanh Tùng")>=0) return "Nhóm 2";
+    return ""; }
+  function selectNhom(g){ document.querySelectorAll('input[name="nhom"]').forEach(function(r){ r.checked=(r.value===g); }); }
+  function applyNhom(){ updateSignPreview(); }
   function fill(d){
     TEXT_FIELDS.forEach(function(id){ var e=document.getElementById(id); if(!e)return;
       if(DATE_FIELDS.indexOf(id)>=0) e.value=toDateInput(d[id]);
       else if(TIME_FIELDS.indexOf(id)>=0) e.value=toTimeInput(d[id]);
       else e.value=d[id]||""; });
     CHK_FIELDS.forEach(function(n){ setChecked(n, d[n]||""); });
-    document.getElementById("lyDo").dataset.touched="1"; document.getElementById("phuongAn").dataset.touched="1";
+    var ld=document.getElementById("lyDo"); if(ld) ld.dataset.touched="1";
     document.getElementById("trangThai").value=d.trangThai||"Chờ duyệt";
+    selectNhom(inferNhom(d));
     setCode(d.maDon||""); originalMaDon=d.maDon||"";
     updateSignPreview();
   }
@@ -690,9 +674,9 @@
     document.querySelectorAll('#view-create input[type=checkbox]').forEach(function(c){c.checked=false;});
     document.getElementById("nguoiLapDon").value=DEFAULT_NGUOI_LAP;
     document.getElementById("donViLap").value="CSKH";
-    document.getElementById("boPhan").value="Marketing";
     document.getElementById("trangThai").value="Chờ duyệt";
-    document.getElementById("lyDo").dataset.touched=""; document.getElementById("phuongAn").dataset.touched="";
+    selectNhom("");
+    document.getElementById("lyDo").dataset.touched="";
     var t=new Date();
     document.getElementById("ngayLapDon").value=t.toISOString().slice(0,10);
     document.getElementById("gioLap").value=t.toTimeString().slice(0,5);
@@ -791,10 +775,10 @@
     document.getElementById("p_chucVu").textContent=rolesArr(d.chucVu).join("\n");
     buildSign(d.chucVu||"");
   }
-  function buildSign(cv){ var roles=["Chủ quản"].concat(rolesArr(cv)), host=document.getElementById("p_sign");
+  function buildSign(cv){ var raw=rolesArr(cv), seen={}, uq=[]; raw.forEach(function(r){ if(!seen[r]){seen[r]=1;uq.push(r);} }); var roles=["Chủ quản"].concat(uq), host=document.getElementById("p_sign");
     host.style.gridTemplateColumns="repeat("+roles.length+",1fr)";
     host.innerHTML=roles.map(function(r){ var cn=CV_CN[r]?(" "+CV_CN[r]):""; return '<div><small>'+r.toUpperCase()+cn+'</small></div>'; }).join(""); }
-  function updateSignPreview(){ var roles=["Chủ quản"].concat(rolesArr(getChecked("chucVu"))), host=document.getElementById("signPreview");
+  function updateSignPreview(){ var g=(document.querySelector('input[name="nhom"]:checked')||{}).value||"", rs=[]; if(g&&NHOM[g]){ var sn={}; NHOM[g].forEach(function(x){ if(!sn[x[1]]){sn[x[1]]=1;rs.push(x[1]);} }); } var roles=["Chủ quản"].concat(rs), host=document.getElementById("signPreview");
     host.style.gridTemplateColumns="repeat("+Math.min(roles.length,3)+",1fr)";
     host.innerHTML=roles.map(function(r){ var cn=CV_CN[r]?(" "+CV_CN[r]):""; return '<div class="sp"><b>'+r+'<small>'+cn+'</small></b><i>(ký tay khi in)</i></div>'; }).join(""); }
 
@@ -863,7 +847,7 @@
     var el=document.getElementById("ovReasonTable"); if(!el) return;
     var rows=ovFilteredRows();
     var chans=["Shopee","Tiktok","Website"];
-    var reasons=["Thiếu hàng","Hàng bị hư hỏng","Gửi nhầm hàng","Màu sơn không chuẩn","Chất lượng không tốt","Khác"];
+    var reasons=["Thiếu hàng","Hàng bị hư hỏng","Gửi nhầm hàng","Màu không chuẩn","Chất lượng không tốt","Khác"];
     var cnt={}; reasons.forEach(function(rr){ cnt[rr]={t:0}; chans.forEach(function(c){cnt[rr][c]=0;}); });
     var colTot={}; chans.forEach(function(c){colTot[c]=0;}); var grand=0;
     rows.forEach(function(row){
