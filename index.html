@@ -515,8 +515,8 @@
       <th style="width:13%">Mã đơn hàng</th>
       <th style="width:8%">Kênh bán</th>
       <th style="width:8.5%">Ngày đặt đơn</th>
-      <th style="width:19%">Nội dung khiếu nại</th>
-      <th>Ký tên</th><th>Ký tên</th><th>Ký tên</th><th>Ký tên</th>
+      <th style="width:14%">Nội dung khiếu nại</th>
+      <th style="width:6%">Chủ quản</th><th style="width:6%">CSKH</th><th style="width:9.5%">Xuất kho / Kế toán nội bộ</th><th style="width:6%">Đóng gói</th><th style="width:6%">Đóng gói</th>
     </tr></thead>
     <tbody id="pl_body"></tbody>
   </table>
@@ -797,7 +797,7 @@
     rows.forEach(function(d,i){
       b+='<tr><td class="c">'+(i+1)+'</td><td class="c">'+esc(d.maDon)+'</td><td class="c">'+esc(fmtDate(d.ngayLapDon))+'</td>'
         +'<td>'+esc(d.maDonHang)+'</td><td class="c">'+esc(d.kenh)+'</td><td class="c">'+esc(fmtDate(d.ngayDatHang))+'</td>'
-        +'<td>'+esc(d.noiDung)+'</td><td class="sig"></td><td class="sig"></td><td class="sig"></td><td class="sig"></td></tr>';
+        +'<td>'+esc(d.noiDung)+'</td><td class="sig"></td><td class="sig"></td><td class="sig"></td><td class="sig"></td><td class="sig"></td></tr>';
     });
     document.getElementById("pl_body").innerHTML=b;
     setPage("landscape"); document.body.className="pm-list"; window.print(); setTimeout(function(){document.body.className="";},500);
